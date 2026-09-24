@@ -30,6 +30,7 @@ const BASELINE_SEED_RATES: Record<string, number> = {
   dkk: 6.87,
   krw: 1375.0,
   zar: 18.2,
+  bdt: 121.5, // Bangladeshi Taka
 };
 
 /**

@@ -108,21 +108,38 @@ export const AUSTRALIA: CountryProfile = {
     topUniversities: [
       {
         name: 'The University of Melbourne',
-        globalRankQs: 13, // Ranked #13 globally
+        globalRankQs: 13,
         city: 'Melbourne, Victoria',
         notableFields: ['Medicine', 'Law', 'Computer Science'],
+        websiteUrl: 'https://www.unimelb.edu.au',
       },
       {
         name: 'The University of Sydney',
         globalRankQs: 18,
         city: 'Sydney, New South Wales',
         notableFields: ['Veterinary Science', 'Architecture', 'Business'],
+        websiteUrl: 'https://www.sydney.edu.au',
       },
       {
         name: 'Australian National University (ANU)',
         globalRankQs: 30,
         city: 'Canberra, ACT',
         notableFields: ['Public Policy', 'Earth & Marine Sciences', 'Astronomy'],
+        websiteUrl: 'https://www.anu.edu.au',
+      },
+      {
+        name: 'University of New South Wales (UNSW Sydney)',
+        globalRankQs: 19,
+        city: 'Sydney, New South Wales',
+        notableFields: ['Civil Engineering', 'Photovoltaics', 'Finance'],
+        websiteUrl: 'https://www.unsw.edu.au',
+      },
+      {
+        name: 'The University of Queensland (UQ)',
+        globalRankQs: 40,
+        city: 'Brisbane, Queensland',
+        notableFields: ['Biotechnology', 'Environmental Science', 'Mining Engineering'],
+        websiteUrl: 'https://www.uq.edu.au',
       },
     ],
   },

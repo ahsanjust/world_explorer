@@ -6,6 +6,7 @@ export interface University {
   globalRankQs: number;
   city: string;
   notableFields: string[];
+  websiteUrl?: string;
 }
 
 export interface Landmark {

@@ -83,7 +83,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             >
               <Compass size={20} color="var(--accent-gold)" />
             </div>
-            <div>
+            <div className="nav-brand-text">
               <div
                 style={{
                   fontFamily: 'var(--font-display)',
@@ -129,10 +129,12 @@ export const TopNav: React.FC<TopNavProps> = ({
               gap: '0.5rem',
             }}
             title="Search Countries (Cmd+K)"
+            aria-label="Search countries, keyboard shortcut Command K"
           >
             <Search size={14} color="var(--accent-gold)" />
-            <span style={{ fontSize: 'var(--text-xs)' }}>Search</span>
+            <span className="nav-label" style={{ fontSize: 'var(--text-xs)' }}>Search</span>
             <kbd
+              className="nav-kbd"
               style={{
                 fontSize: '10px',
                 background: 'rgba(255, 255, 255, 0.08)',
@@ -157,9 +159,10 @@ export const TopNav: React.FC<TopNavProps> = ({
                 gap: '0.4rem',
               }}
               title="Multi-Criteria Country Discovery"
+              aria-label="Open multi-criteria country discovery filters"
             >
               <Filter size={14} color="var(--accent-emerald)" />
-              <span style={{ fontSize: 'var(--text-xs)' }}>Filters</span>
+              <span className="nav-label" style={{ fontSize: 'var(--text-xs)' }}>Filters</span>
             </button>
           )}
 
@@ -173,15 +176,17 @@ export const TopNav: React.FC<TopNavProps> = ({
               alignItems: 'center',
               gap: '0.4rem',
             }}
+            aria-label="Open thematic discovery lenses"
           >
             <Sparkles size={14} color="var(--accent-cyan)" />
-            <span style={{ fontSize: 'var(--text-xs)' }}>Thematic Lenses</span>
+            <span className="nav-label" style={{ fontSize: 'var(--text-xs)' }}>Thematic Lenses</span>
           </button>
 
           {/* Comparison Dock Trigger */}
           <button
             onClick={onOpenCompare}
             className="btn-secondary"
+            aria-label="Open country comparison lab"
             style={{
               padding: '0.45rem 0.9rem',
               display: 'flex',
@@ -191,7 +196,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             }}
           >
             <Scale size={14} color={pinnedCount > 0 ? 'var(--accent-gold)' : 'var(--text-secondary)'} />
-            <span style={{ fontSize: 'var(--text-xs)' }}>Compare</span>
+            <span className="nav-label" style={{ fontSize: 'var(--text-xs)' }}>Compare</span>
             {pinnedCount > 0 && (
               <span
                 style={{

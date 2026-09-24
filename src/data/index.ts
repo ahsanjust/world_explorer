@@ -4,6 +4,7 @@ import { REGIONS } from './regions';
 import { SUBREGIONS } from './subregions';
 import { THEMATIC_PORTALS, ThematicPortal } from './thematic';
 import { computeDatasetStats, validateDataset } from './dataset';
+export * from './universities';
 
 // Import full country profiles
 import { QATAR } from './countries/qatar';

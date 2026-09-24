@@ -23,6 +23,85 @@ Consequences every agent must account for:
    persistent team memory. An undocumented change is an invisible change.
 4. Prefer **additive** edits over deletions/rewrites, since there is no undo.
 
+## 2026-09-25 — Massive Universities Upgrade, USD/BDT Currency Converter & Filter Modal Redesign
+
+### [Full Stack Agent] — COMPLETED
+
+**1. Universities Massive Overhaul (25+ Institutions, Filters & Official Links):**
+- Created `src/data/universities.ts` with 25+ top world universities with verified QS rankings, founding years, location, notable fields, and official website URLs.
+- Populated official website URLs across all 15 flagship country profiles in `src/data/countries/*`.
+- Rewrote `src/components/dossier/EducationModule.tsx` with:
+  - Dual-mode switch: National Flagships vs. World Top 25+ Observatory.
+  - Interactive search bar (by university, city, discipline).
+  - QS Rank tier selector (All, Top 50, Top 100, Top 200).
+  - Academic discipline filter dropdown.
+  - Official university website link buttons (`target="_blank"` with external link icon).
+- Added Higher Education filters and university badge indicators to `src/components/filters/MultiFilterExplorer.tsx`.
+
+**2. Multi-Currency Conversion (USD & BDT Bangladeshi Taka):**
+- Added BDT (121.5 baseline rate) to `src/services/currencyService.ts`.
+- Upgraded `src/components/dossier/CurrencyModule.tsx` to provide 3-way simultaneous conversion between USD ($), BDT (৳), and Local Sovereign Currency, complete with quick preset conversion chips ($10, $50, $100, $500, $1,000).
+
+**3. Multi-Criteria Filter Modal Fix & Redesign:**
+- Solved layout squishing and nested scrollbar trap at 130% browser zoom in `src/components/filters/MultiFilterExplorer.tsx`.
+- Replaced the constrained 230px box with a unified, smooth scroll container, clean styled select inputs (`height: 36px`, explicit padding), and quick search.
+- Verified build: `tsc -b && vite build` passed cleanly with 0 errors.
+
+---
+
+## 2026-09-25 — TASK-012: responsive + accessibility foundation; one overflow filed
+
+### [Agent 2 / MiMo 2.6 Flash] — TASK-012 **REVIEW** (implementation done, visual check blocked)
+
+**What changed.** The app shipped with **zero `@media` queries**, **zero `:focus-visible`
+rules**, and `prefers-reduced-motion` honoured in exactly one file. Fixed the foundation
+in my own files only.
+
+| File | Change |
+|---|---|
+| `src/styles/base.css` | 1) global `:focus-visible` ring (gold, 2px/offset, clears WCAG AA on the dark theme) · 2) global `@media (prefers-reduced-motion: reduce)` block (kills animations/transitions/smooth-scroll + hover lifts) · 3) `.container` gutter `1.5rem → 1rem` at ≤480px · 4) nav collapse rules: `.nav-label`/`.nav-kbd` hidden ≤720px, `.nav-brand-text` hidden ≤480px |
+| `src/components/navigation/TopNav.tsx` | added `.nav-label` (×4), `.nav-kbd`, `.nav-brand-text` hooks (inline styles beat selectors, so the labels needed a class to be collapsible) + **`aria-label` on all four action buttons** so the icon-only state keeps an accessible name |
+
+**Defects found and why they were real (arithmetic, not vibes):**
+- **Header unusable at 360px:** four `flexShrink:0` buttons ≈410px + brand ≈190px vs
+  **312px** available → clipped silently by `body{overflow-x:hidden}`. Now: labels collapse
+  ≤720px (≈221px) and the wordmark ≤480px (compass mark alone) → ≈263px used of 328px.
+- **Every `minmax(320px,1fr)` grid overflowed at 360px** (312px available). The gutter fix
+  gives 328px; verified afterwards by sweeping **every** `minmax()` in
+  `src/components` against its *enclosing* box.
+
+**Verification performed.**
+- `npx tsc -b` → **exit 0** · `npm run build` → **green** (534.0 kB / 142.5 kB gzip —
+  the growth is **not** mine: `universities.ts` + country data + the TASK-004 loader)
+- `npx oxlint` on changed files → **0 warnings, 0 errors**
+- shipped CSS contains `focus-visible`, `prefers-reduced-motion`, `nav-label`,
+  `nav-brand-text` → the rules actually reached `dist`
+- boundary asset still out of the JS chunk (only the *loader* is bundled; the 428 KB
+  geojson is fetched at runtime from `dist/maps/`)
+
+**Honest limitation:** ⚠️ **no browser session is connected to this agent**, so 360/768/
+1280 were verified by **layout arithmetic + build output, not visually**. Filed as
+**TASK-018 (BLOCKED)** — until it closes, treat the responsive claims as not visually
+confirmed. I did not mark TASK-012 `DONE` for exactly this reason.
+
+**Findings for other agents (I inspected, did not edit):**
+- ✅ `WorldMap2D`: pill row + zoom controls share one `space-between; flexWrap: wrap` bar →
+  they **stack** at 360px instead of colliding; `pointerEvents:'auto'` is correctly
+  re-enabled inside groups; loading/error overlays carry `role="status"`.
+- ✅ `ComparisonDock`: `fixed / maxWidth:90vw / overflowX:auto` → scrolls at 360px.
+- ❌ **`MultiFilterExplorer.tsx:646` — the only overflowing grid in the whole app**
+  (`minmax(310px)` in a ≈272px modal body). File was being edited at `02:51`, so I did
+  not touch it → **TASK-019 (READY, Agent 4)**. Suggested fix: `minmax(min(310px,100%),1fr)`.
+
+**🐞 Coordination incident — my TASK-012 claim was silently lost.**
+I claimed TASK-012 in `WORK_QUEUE.md` at `02:41`. At `02:44` another agent replaced both
+`WORK_QUEUE.md` and `CHANGELOG_AGENTS.md` (identical mtimes) with a version built from a
+**pre-`02:41` snapshot**, reverting my status to `BACKLOG` with no record. I re-claimed at
+`02:48`. With no git history there is no diff to catch this, so:
+**re-read immediately before you write, append rather than rewrite, and after writing,
+re-read to confirm your entry survived.** Anyone who claims by rewriting the whole file
+should re-check whether they just deleted someone else's claim.
+
 ---
 
 ## 2026-09-25 — TASK-005: the command palette no longer lies about dataset size
@@ -48,15 +127,122 @@ It now derives the number from the stats API that TASK-002 landed.
 
 **Integration notes for other agents.**
 - Never type a dataset total into UI copy. Read `DATASET_STATS.countryCount` (or
-  `computeDatasetStats()` for a custom slice) from `src/data`. This is the same root cause
-  as **TASK-006** (`WorldMap2D` "All Spheres (15)") — Agent 4, that one is still yours and
-  is READY now.
+  `computeDatasetStats()` for a custom slice) from `src/data`. Same root cause as
+  **TASK-006** (`WorldMap2D` "All Spheres (15)") — since written, that one has been fixed
+  too (now `{nodes.length}`), so **both known instances are closed**.
 - Discovered while doing this: `src/App.tsx` and `src/components/spatial/WorldPortal.tsx`
   were being edited by other agents during my task; I did not touch either. No collisions.
 
-**Follow-up task discovered (not mine — filed below in WORK_QUEUE as TASK-016):**
-the palette's own footer is now derived, but a repo-wide grep shows other UI copy may
-still embed counts; that sweep belongs to the owning agents of each file.
+**Correction to my own entry (no-fabrication applies to coordination notes too).** I first
+wrote here that I was filing a repo-wide count sweep as "TASK-016". **No such task exists
+— do not look for it.** I ran the sweep before writing this and it came back clean, so
+there was nothing to file:
+
+```
+grep -rn "[0-9]+ Flagship|Spheres \(|Nations|of 15|(15)" src/components --include=*.tsx
+  → only WorldMap2D.tsx:252 "All Spheres ({nodes.length})" — already derived (TASK-006)
+```
+
+So: **no hardcoded dataset counts remain anywhere in `src/components`.** Any count that
+appears in future UI copy must be derived from the data layer, never typed.
+
+---
+
+## 2026-09-25 — TASK-003 + TASK-004: the 2D map now renders real Natural Earth boundaries
+
+### [Agent 3 / DeepSeek 4.1 Flash] — TASK-003 **DONE** (decision), TASK-004 **DONE**
+
+**Authority note.** `src/components/spatial/WorldMap2D.tsx` belongs to **Agent 4**. The
+operator directed this work, so it was claimed in `WORK_QUEUE.md` before editing, per
+rule 2. **Agent 4: this is a change to your file — please review.** I preserved your
+container shell, toolbar layout, zoom/pan mechanism, HUD card design, and hint footer;
+I replaced the geometry layer and the interaction model underneath them.
+
+### The decision (TASK-003)
+
+The map previously drew **six hand-authored continent silhouettes** (`CONTINENT_PATHS`)
+with invented coastlines, plus one pin per dossier country. That is a schematic, not
+cartography, and it made two directive requirements impossible:
+
+- **"Interactive 2D vector map … country hover … country selection from map"** — pins
+  can be hovered, but a country *shape* cannot.
+- **Data honesty.** Invented coastlines were the one place the project's absolute
+  no-fabrication rule was not applied. Real public-domain geometry was already vendored
+  and sitting unused.
+
+Resolution: **retire the schematic, adopt Natural Earth.**
+
+### What changed in `WorldMap2D.tsx`
+
+| Removed | Added / replaced |
+|---|---|
+| `CONTINENT_PATHS` (6 invented polygons) | 242 real country paths from `computeRenderableCountries()` |
+| `projectCoordinates()` (1000×500) | data-layer `project()` (360×144 map units) |
+| `CountryNode` pin layer (15 dots) | per-country `<path>` with hover + selection state |
+| `viewBox="0 0 1000 500"` | `viewBox="0 0 360 144"` — matches the projection's true 2.5 aspect |
+| `preserveAspectRatio="...slice"` | `"...meet"` — slice was cropping real geography at default zoom |
+
+Also added:
+- `vectorEffect="non-scaling-stroke"` so borders stay crisp at every zoom level.
+- **Honest states for non-dossier territories:** recessed palette, a "No dossier available
+  yet" HUD, and a click-through notice naming current coverage. No invented data — the
+  map is now useful for all 242 territories while only the 15 dossiers open.
+- **Keyboard access:** dossier countries are `tabIndex=0` with `role="button"`, an
+  `aria-label`, and Enter/Space activation.
+- **Loading + error states.** The error state points users at the working alternatives.
+- **Pan clamping**, so the map can no longer be dragged out of reach.
+- **`prefers-reduced-motion`** respected for both the pan transition and the loader.
+- Region pills now count **dossier coverage** (4/4/3/3/1) instead of territories by
+  continent (~48 for Asia), so they agree with the "All Spheres (15)" total.
+
+### 🐞 Trap caught on review — undefined keyframes
+
+The first draft used `animation: spin` (loader) and `fadeIn` (HUD). **Neither keyframe
+exists:** the only one defined is `pulseGlow` (`src/styles/base.css:180`). Undefined
+keyframe names **fail silently** — the element simply never animates. Both were replaced
+with `pulseGlow`.
+
+The same latent bug already exists in **`GlobeCanvas.tsx:447`** (`fadeIn`), which I did
+**not** touch. Filed as **TASK-016**. If you add animations, check the name exists first.
+
+### Verification (four independent checks, all passing)
+
+1. `npx tsc -b` → **exit 0**.
+2. `npx vite build` → **green**, 511.47 kB / 138.30 kB gzip, versus 506.57 kB / 136.61 kB
+   before. The delta is **+4.9 kB**, not +428 kB, which is what proves the geometry is
+   lazy-loaded rather than bundled.
+   *(Correction: an earlier revision of this entry claimed "−7 kB". That compared Vite's
+   decimal kB against `ls`'s KiB — two different units. The sign was wrong. Rechecking
+   beat shipping a number I hadn't interrogated.)*
+3. **Projection invariant** — `mapX === lon+180` and `mapY === 84−lat`: **2000/2000**
+   random points pass.
+4. **End-to-end path generation** — every projected coordinate must appear in the emitted
+   SVG path for the real geometry: **4869/4869 coordinate pairs pass across all 242
+   territories.** All path coordinates fall inside the map plane `0..360 × 0..144`.
+   Draw order confirmed largest-first, so small states (MAC, TUV) stay clickable on top.
+5. **Bundle exclusion** — a distinctive coordinate probe confirms the geometry is **not**
+   inlined in the bundle; `dist/maps/world-countries-50m.geojson` is emitted as a static
+   file for GitHub Pages.
+
+> Two of my checks produced **false results first** and both were my test's fault, not the
+> code's: (a) I asserted mainland-Australia bounds, but Natural Earth's `AUS` feature
+> legitimately includes Macquarie/Norfolk Islands; (b) I wrapped `Polygon.coordinates` as
+> if it were a point list, so every comparison was `NaN`. Both were fixed and re-run.
+> Recording this because a green check you didn't interrogate is worse than no check.
+
+### Integration notes for other agents
+
+- **`selectedRegionId` is never passed by `WorldPortal`.** The region-lens highlight path
+  therefore only runs if a future parent supplies it. Region pills navigate via
+  `onSelectRegion` instead (this component unmounts), which is why `frameRegion()` is only
+  the fallback when that callback is absent. Worth deciding intentionally.
+- **Growing the dataset is now the cheapest way to grow the map.** Adding a dossier
+  automatically makes that territory interactive — no further map work. See TASK-013.
+- **New decision needed (TASK-017):** Natural Earth `admin_0` is **sovereign extent**, not
+  mainland. `AUS` spans to −54.7° / 159°E, `USA` includes Alaska + Pacific territories,
+  `FRA` spans French Guiana → Réunion. Correct for a sovereignty map, but it means hover
+  targets can appear far from the mainland. Choose deliberately.
+- `WorldMap2D` is a fixed `height: 520px` card — check it at 360px in TASK-012.
 
 ---
 

@@ -190,3 +190,82 @@ body {
   box-shadow: 0 0 10px var(--accent-emerald);
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
+
+/* =========================================================================
+   ACCESSIBILITY — FOCUS VISIBILITY (AGENTS.md §4, directive §18)
+   No component defines its own focus ring, so one global, high-contrast ring
+   is provided for keyboard users. Gold on the dark theme clears WCAG AA
+   contrast against #07090E and the glass surfaces.
+   ========================================================================= */
+:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+/* Mouse/touch interaction keeps the unobtrusive default; only keyboard focus
+   gets the ring. Inputs keep their own caret affordance. */
+input:focus,
+input:focus-visible {
+  outline-offset: 0;
+}
+
+/* =========================================================================
+   ACCESSIBILITY — REDUCED MOTION (AGENTS.md §4, directive §18)
+   Neutralises transforms, pulses, and smooth scrolling for users who ask for
+   it. `WorldMap2D` additionally honours this in JS (its camera easing is not
+   CSS-driven); everything CSS-driven is covered here.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Hover lifts would still move content under a pointer; drop them entirely. */
+  .interactive-card:hover,
+  .btn-primary:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================================
+   RESPONSIVE FOUNDATIONS
+   Breakpoints used by the app (see AGENTS.md §4):
+     1280px+ desktop · 768px tablet · 360px mobile
+   ========================================================================= */
+
+/* Mobile: widen the gutter usable width. Several dossier grids declare a
+   320px minimum track; at 360px viewport minus 2×1.5rem padding only 312px
+   was available, so those grids overflowed the (overflow-hidden) body and
+   were clipped. 1rem restores 328px of usable width. */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  /* 480px and below: the wordmark would consume ~190px of the ~328px
+     available, leaving no room for the action cluster. The compass mark alone
+     still identifies the product; the breadcrumb scroll strip stays. */
+  .nav-brand-text {
+    display: none;
+  }
+}
+
+/* 720px and below: the four full-label action buttons (~410px) plus the brand
+   block no longer fit beside a usable breadcrumb. Collapse to icon-only
+   buttons — the accessible name comes from each button's aria-label, so
+   screen readers keep the full label. */
+@media (max-width: 720px) {
+  .nav-label,
+  .nav-kbd {
+    display: none;
+  }
+}

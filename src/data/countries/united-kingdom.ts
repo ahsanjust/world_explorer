@@ -108,22 +108,25 @@ export const UNITED_KINGDOM: CountryProfile = {
     educationExpenditurePercentGdp: 5.5,
     topUniversities: [
       {
+        name: 'Imperial College London',
+        globalRankQs: 2, // Ranked #2 globally
+        city: 'London',
+        notableFields: ['Engineering', 'Data Science', 'Infectious Disease Modeling'],
+        websiteUrl: 'https://www.imperial.ac.uk',
+      },
+      {
         name: 'University of Oxford',
         globalRankQs: 3,
         city: 'Oxford',
         notableFields: ['Philosophy, Politics & Economics (PPE)', 'Medicine', 'Literature'],
+        websiteUrl: 'https://www.ox.ac.uk',
       },
       {
         name: 'University of Cambridge',
         globalRankQs: 5,
         city: 'Cambridge',
         notableFields: ['Mathematics (Newton Alma Mater)', 'Physics', 'Biochemistry'],
-      },
-      {
-        name: 'Imperial College London',
-        globalRankQs: 2, // Ranked #2 globally
-        city: 'London',
-        notableFields: ['Engineering', 'Data Science', 'Infectious Disease Modeling'],
+        websiteUrl: 'https://www.cam.ac.uk',
       },
     ],
   },

@@ -112,18 +112,21 @@ export const UNITED_STATES: CountryProfile = {
         globalRankQs: 1, // Ranked #1 in the world
         city: 'Cambridge, Massachusetts',
         notableFields: ['Artificial Intelligence', 'Physics', 'Quantum Computing', 'Aeronautics'],
+        websiteUrl: 'https://www.mit.edu',
       },
       {
         name: 'Harvard University',
         globalRankQs: 4,
         city: 'Cambridge, Massachusetts',
         notableFields: ['Law', 'Medicine', 'Economics', 'Government'],
+        websiteUrl: 'https://www.harvard.edu',
       },
       {
         name: 'Stanford University',
         globalRankQs: 6,
         city: 'Stanford, California',
         notableFields: ['Computer Science', 'Venture Capital', 'Electrical Engineering'],
+        websiteUrl: 'https://www.stanford.edu',
       },
     ],
   },

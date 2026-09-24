@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, RefreshCw, ArrowRightLeft, ShieldCheck, Info, CheckCircle2 } from 'lucide-react';
+import { DollarSign, ArrowRightLeft, ShieldCheck, Info, Coins } from 'lucide-react';
 import { CountryProfile } from '../../types/country';
 import { useLiveCurrency } from '../../hooks/useLiveCurrency';
 
@@ -8,7 +8,7 @@ interface CurrencyModuleProps {
 }
 
 export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
-  const { dateStr, source, fetchedAt, getRateFor, convert, isLoading } = useLiveCurrency();
+  const { dateStr, source, getRateFor, convert } = useLiveCurrency();
   const [inputAmount, setInputAmount] = useState<number>(100);
   const [baseCurrency, setBaseCurrency] = useState<string>('USD');
 
@@ -18,10 +18,13 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
   // Conversion calculations
   const localPerUsd = rateInfo.rate;
   const usdPerLocal = rateInfo.inverseRate;
+  const bdtPerLocal = convert(1, curr.code, 'BDT');
+  const bdtPerUsd = convert(1, 'USD', 'BDT');
 
-  // Convert input amount to/from local currency
-  const convertedToLocal = convert(inputAmount, 'USD', curr.code);
-  const convertedFromLocal = convert(inputAmount, curr.code, 'USD');
+  // Convert input amount to target currencies
+  const amountInUsd = baseCurrency === 'USD' ? inputAmount : convert(inputAmount, baseCurrency, 'USD');
+  const amountInLocal = baseCurrency === curr.code ? inputAmount : convert(inputAmount, baseCurrency, curr.code);
+  const amountInBdt = baseCurrency === 'BDT' ? inputAmount : convert(inputAmount, baseCurrency, 'BDT');
 
   // Source attribution label
   const getSourceLabel = () => {
@@ -71,7 +74,7 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
         </div>
 
         <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginBottom: '1.75rem', maxWidth: '780px' }}>
-          Official sovereign currency profile, daily central bank reference rate, monetary peg disclosures, and interactive conversion calculator.
+          Official sovereign currency profile, central bank benchmark rates, and multi-currency converter between local currency, US Dollars (USD), and Bangladeshi Taka (BDT).
         </p>
 
         {/* Pegged Currency Special Disclosure (if applicable) */}
@@ -115,10 +118,11 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
             </div>
 
             <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {/* USD Benchmark */}
               <div
                 style={{
                   background: 'var(--bg-surface-elevated)',
-                  padding: '1rem',
+                  padding: '0.85rem 1rem',
                   borderRadius: 'var(--radius-md)',
                   border: '1px solid var(--border-subtle)',
                 }}
@@ -126,15 +130,16 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
                 <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
                   1 US Dollar (USD) equals
                 </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--accent-gold)', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-gold)', marginTop: '2px' }}>
                   {localPerUsd.toFixed(4)} <span style={{ fontSize: 'var(--text-sm)' }}>{curr.code}</span>
                 </div>
               </div>
 
+              {/* Local to USD */}
               <div
                 style={{
                   background: 'var(--bg-surface-elevated)',
-                  padding: '1rem',
+                  padding: '0.85rem 1rem',
                   borderRadius: 'var(--radius-md)',
                   border: '1px solid var(--border-subtle)',
                 }}
@@ -142,8 +147,28 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
                 <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
                   1 {curr.name} ({curr.code}) equals
                 </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--accent-cyan)', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-cyan)', marginTop: '2px' }}>
                   ${usdPerLocal.toFixed(4)} <span style={{ fontSize: 'var(--text-sm)' }}>USD</span>
+                </div>
+              </div>
+
+              {/* Bangladeshi Taka (BDT) Benchmark */}
+              <div
+                style={{
+                  background: 'var(--bg-surface-elevated)',
+                  padding: '0.85rem 1rem',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
+                  1 {curr.name} ({curr.code}) equals in Bangladeshi Taka
+                </div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-emerald)', marginTop: '2px' }}>
+                  ৳{bdtPerLocal.toFixed(2)} <span style={{ fontSize: 'var(--text-sm)' }}>BDT</span>
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+                  1 USD ≈ ৳{bdtPerUsd.toFixed(2)} BDT
                 </div>
               </div>
             </div>
@@ -166,21 +191,21 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
             </div>
           </div>
 
-          {/* Card 2: Interactive Converter Terminal */}
+          {/* Card 2: Interactive Converter Terminal with USD & BDT Support */}
           <div className="glass-panel" style={{ padding: '1.5rem' }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <ArrowRightLeft size={18} color="var(--accent-gold)" />
-              <span>Interactive Currency Calculator</span>
+              <span>Interactive Multi-Currency Calculator</span>
             </h3>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
-              Simulate currency conversions between USD and {curr.name}.
+              Convert seamlessly between US Dollars (USD), Bangladeshi Taka (BDT), and {curr.name} ({curr.code}).
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {/* USD to Local */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              {/* Input Amount & Base Currency Selector */}
               <div>
                 <label style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', marginBottom: '0.35rem', display: 'block' }}>
-                  Amount in US Dollars (USD):
+                  Amount to Convert:
                 </label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <input
@@ -199,35 +224,127 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
                       fontWeight: 600,
                     }}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--text-secondary)' }}>USD</span>
+                  <select
+                    value={baseCurrency}
+                    onChange={(e) => setBaseCurrency(e.target.value)}
+                    style={{
+                      background: 'var(--bg-surface-elevated)',
+                      border: '1px solid var(--accent-gold-dark)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '0.65rem 0.85rem',
+                      color: 'var(--accent-gold)',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="BDT">BDT (৳ Taka)</option>
+                    <option value={curr.code}>{curr.code} ({curr.symbol})</option>
+                  </select>
                 </div>
               </div>
 
-              {/* Conversion Result Box */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, rgba(229, 181, 88, 0.1) 0%, rgba(21, 27, 42, 0.8) 100%)',
-                  border: '1px solid var(--accent-gold-dark)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '1rem 1.25rem',
-                }}
-              >
-                <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
-                  Estimated Converted Value:
-                </span>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--accent-gold-light)', marginTop: '2px' }}>
-                  {convertedToLocal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{' '}
-                  <span style={{ fontSize: 'var(--text-md)' }}>{curr.code}</span>
-                </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                  ≈ {curr.symbol} {convertedToLocal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
+              {/* Quick Amount Chips */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Presets:</span>
+                {[10, 50, 100, 500, 1000].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setInputAmount(amt)}
+                    style={{
+                      background: inputAmount === amt ? 'rgba(229, 181, 88, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                      border: `1px solid ${inputAmount === amt ? 'var(--accent-gold)' : 'var(--border-subtle)'}`,
+                      color: inputAmount === amt ? 'var(--accent-gold)' : 'var(--text-secondary)',
+                      borderRadius: '4px',
+                      padding: '2px 8px',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      fontWeight: inputAmount === amt ? 700 : 500,
+                    }}
+                  >
+                    {amt}
+                  </button>
+                ))}
               </div>
 
-              {/* Inverse Quick Calc */}
-              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>
-                Inverse: {inputAmount.toLocaleString()} {curr.code} ={' '}
-                <strong style={{ color: 'var(--text-primary)' }}>${convertedFromLocal.toFixed(2)} USD</strong>
+              {/* Converted Values Grid */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {/* Converted Value 1 */}
+                {baseCurrency !== 'USD' && (
+                  <div
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(229, 181, 88, 0.1) 0%, rgba(21, 27, 42, 0.8) 100%)',
+                      border: '1px solid var(--accent-gold-dark)',
+                      borderRadius: 'var(--radius-md)',
+                      padding: '0.85rem 1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>US Dollar (USD)</div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-gold-light)', marginTop: '2px' }}>
+                        ${amountInUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </div>
+                    </div>
+                    <span className="badge badge-gold" style={{ fontSize: '10px' }}>USD</span>
+                  </div>
+                )}
+
+                {/* Converted Value 2 */}
+                {baseCurrency !== 'BDT' && (
+                  <div
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(52, 211, 153, 0.1) 0%, rgba(21, 27, 42, 0.8) 100%)',
+                      border: '1px solid rgba(52, 211, 153, 0.4)',
+                      borderRadius: 'var(--radius-md)',
+                      padding: '0.85rem 1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Bangladeshi Taka (BDT)</div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-emerald)', marginTop: '2px' }}>
+                        ৳{amountInBdt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </div>
+                    </div>
+                    <span className="badge badge-emerald" style={{ fontSize: '10px' }}>BDT</span>
+                  </div>
+                )}
+
+                {/* Converted Value 3: Local Currency */}
+                {baseCurrency !== curr.code && (
+                  <div
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(21, 27, 42, 0.8) 100%)',
+                      border: '1px solid var(--border-cyan)',
+                      borderRadius: 'var(--radius-md)',
+                      padding: '0.85rem 1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                        {curr.name} ({curr.code})
+                      </div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-cyan)', marginTop: '2px' }}>
+                        {curr.symbol} {amountInLocal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{' '}
+                        <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600 }}>{curr.code}</span>
+                      </div>
+                    </div>
+                    <span className="badge" style={{ background: 'rgba(56, 189, 248, 0.15)', color: 'var(--accent-cyan)', fontSize: '10px' }}>
+                      {curr.code}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

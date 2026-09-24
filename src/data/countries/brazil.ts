@@ -113,15 +113,24 @@ export const BRAZIL: CountryProfile = {
     topUniversities: [
       {
         name: 'University of São Paulo (USP)',
-        globalRankQs: 92, // Ranked #1 in Latin America
+        globalRankQs: 85,
         city: 'São Paulo',
         notableFields: ['Agricultural Sciences', 'Tropical Medicine', 'Physics'],
+        websiteUrl: 'https://www5.usp.br',
       },
       {
         name: 'State University of Campinas (Unicamp)',
         globalRankQs: 220,
         city: 'Campinas, São Paulo',
         notableFields: ['Bioenergy', 'Computer Science', 'Chemical Engineering'],
+        websiteUrl: 'https://www.unicamp.br',
+      },
+      {
+        name: 'Federal University of Rio de Janeiro (UFRJ)',
+        globalRankQs: 371,
+        city: 'Rio de Janeiro',
+        notableFields: ['Oceanography', 'Biophysics', 'Petroleum Engineering'],
+        websiteUrl: 'https://ufrj.br',
       },
     ],
   },

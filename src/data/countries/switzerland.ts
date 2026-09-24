@@ -119,18 +119,21 @@ export const SWITZERLAND: CountryProfile = {
         globalRankQs: 7, // Ranked #7 globally, #1 in Continental Europe
         city: 'Zurich',
         notableFields: ['Computer Science', 'Physics (Einstein Alma Mater)', 'Robotics & AI', 'Architecture'],
+        websiteUrl: 'https://ethz.ch/en.html',
       },
       {
         name: 'EPFL (École Polytechnique Fédérale de Lausanne)',
         globalRankQs: 26,
         city: 'Lausanne',
         notableFields: ['Bioengineering', 'Data Science', 'Clean Energy'],
+        websiteUrl: 'https://www.epfl.ch/en',
       },
       {
         name: 'University of Zurich (UZH)',
         globalRankQs: 91,
         city: 'Zurich',
         notableFields: ['Medicine', 'Quantitative Finance', 'Economics'],
+        websiteUrl: 'https://www.uzh.ch/en.html',
       },
     ],
   },

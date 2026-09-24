@@ -115,18 +115,21 @@ export const SINGAPORE: CountryProfile = {
         globalRankQs: 8, // Ranked #8 globally, #1 in Asia
         city: 'Kent Ridge, Singapore',
         notableFields: ['Computer Science & AI', 'Civil Engineering', 'Law', 'Business'],
+        websiteUrl: 'https://www.nus.edu.sg',
       },
       {
         name: 'Nanyang Technological University (NTU)',
         globalRankQs: 15,
         city: 'Jurong West, Singapore',
         notableFields: ['Materials Science (Top 3 worldwide)', 'Mechanical Engineering', 'Chemistry'],
+        websiteUrl: 'https://www.ntu.edu.sg',
       },
       {
         name: 'Singapore Management University (SMU)',
         globalRankQs: 545,
         city: 'Bras Basah, Singapore',
         notableFields: ['Finance & Accounting', 'Corporate Governance', 'FinTech'],
+        websiteUrl: 'https://www.smu.edu.sg',
       },
     ],
   },
