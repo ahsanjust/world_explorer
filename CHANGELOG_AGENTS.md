@@ -25,6 +25,94 @@ Consequences every agent must account for:
 
 ---
 
+## 2026-09-25 — TASK-005: the command palette no longer lies about dataset size
+
+### [Agent 2 / MiMo 2.6 Flash] — TASK-005 **DONE**
+
+**What changed.** The `Cmd+K` palette footer hardcoded `"12 Flagship Nations Loaded"`
+while the dataset holds 15 — a user-visible factual error under the no-fabrication rule.
+It now derives the number from the stats API that TASK-002 landed.
+
+| File | Change |
+|---|---|
+| `src/components/navigation/CommandPalette.tsx` | Added `DATASET_STATS` to the existing `../../data` import; footer literal → `{DATASET_STATS.countryCount} Flagship Nations Loaded`. Two lines total; no layout/styling touched. |
+
+**Verification performed.**
+- `npx tsc -b` → **exit 0**
+- `npm run build` → green (506.6 kB / 136.6 kB gzip; the pre-existing
+  `chunkSizeWarningLimit` notice is unchanged and **not** introduced by this task)
+- `npx oxlint src/components/navigation/CommandPalette.tsx` → **0 errors** (4 warnings are
+  pre-existing `set-state-in-effect` hits from the focus effect, present before this task)
+- `grep "12 Flagship" dist/assets/*.js` → **0 matches**: the stale claim is gone from the
+  shipped bundle, not just the source.
+
+**Integration notes for other agents.**
+- Never type a dataset total into UI copy. Read `DATASET_STATS.countryCount` (or
+  `computeDatasetStats()` for a custom slice) from `src/data`. This is the same root cause
+  as **TASK-006** (`WorldMap2D` "All Spheres (15)") — Agent 4, that one is still yours and
+  is READY now.
+- Discovered while doing this: `src/App.tsx` and `src/components/spatial/WorldPortal.tsx`
+  were being edited by other agents during my task; I did not touch either. No collisions.
+
+**Follow-up task discovered (not mine — filed below in WORK_QUEUE as TASK-016):**
+the palette's own footer is now derived, but a repo-wide grep shows other UI copy may
+still embed counts; that sweep belongs to the owning agents of each file.
+
+---
+
+## 2026-09-25 — TASK-006 + TASK-014: every dataset count now derives from the data layer
+
+### [Agent 3 / DeepSeek 4.1 Flash] — TASK-006 **DONE**, TASK-014 **DONE** (operator-directed)
+
+**Authority note.** These two edits are in files owned by **Agent 4**
+(`src/components/spatial/*`). The human operator explicitly directed this work, so it was
+claimed in `WORK_QUEUE.md` before touching anything, per rule 2. **Agent 4: these are
+two-line changes — review and take ownership if you prefer a different derivation.**
+`CommandPalette.tsx` (Agent 2's) was **not** touched — see below.
+
+| File | Owner | Change |
+|---|---|---|
+| `src/components/spatial/WorldPortal.tsx` | Agent 4 | `{reg.subregions.length}` → `{getSubregionsByRegion(reg.id).length}` |
+| `src/components/spatial/WorldMap2D.tsx` | Agent 4 | literal `All Spheres (15)` → `All Spheres ({nodes.length})` |
+| `src/types/spatial.ts` | Agent 3 | documented `Region.subregions` semantics (root cause) |
+
+**Corrected on screen.** All five regions were misreporting their subregion total:
+
+| Region | Was shown | Now shows |
+|---|---|---|
+| Asia | 5 | **3** |
+| Europe | 4 | **2** |
+| Americas | 4 | **2** |
+| Africa | 5 | **3** |
+| Oceania | 4 | **1** |
+
+**Root cause fixed, not just the symptom.** `src/types/spatial.ts` now documents that
+`Region.subregions` is the forward-looking **coverage plan** — it deliberately names
+subregions with no authored record yet — and carries an explicit warning not to derive
+display counts from it. The original bug was a developer reading a plausible-looking type
+field; the type now says what it means. The underlying data gap stays open as **TASK-015**.
+
+**Why `nodes.length` in `WorldMap2D` rather than `DATASET_STATS`.** The per-region buttons
+immediately below already compute `nodes.filter((n) => n.regionId === rId).length`, so
+`nodes.length` keeps the "All" bucket and the region buckets on the same local source.
+Both resolve to the canonical 15.
+
+**✅ TASK-005 was already fixed by Agent 2** (`CommandPalette.tsx` now renders
+`{DATASET_STATS.countryCount} Flagship Nations Loaded`, and imports it from `src/data`).
+I detected this on re-read and left the file alone. Worth noting as a **working handoff**:
+Agent 2 consumed the TASK-002 stats API without needing coordination, exactly as the
+interface was designed for.
+
+**Verified:** `npx tsc -b` → exit 0. `npx vite build` → green (136.63 kB gzip).
+Per-region authored subregion counts independently confirmed as 3 / 2 / 2 / 3 / 1.
+`grep` for `All Spheres (1[0-9])` and similar literals → **no hardcoded dataset counts
+remain in the UI**.
+
+**Still open for Agent 1:** TASK-003 (the call on hand-drawn continent silhouettes vs. the
+vendored Natural Earth boundaries), which blocks TASK-004.
+
+---
+
 ## 2026-09-25 — TASK-002: dataset integrity validation lands, and it found a real bug
 
 ### [Agent 3 / DeepSeek 4.1 Flash] — TASK-002 **DONE**

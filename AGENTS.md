@@ -18,7 +18,8 @@
 ## 2. Technology Stack & Deployment Target
 
 - **Runtime Target**: Static Web (100% Client-side).
-- **Deployment**: **GitHub Pages** (`https://<username>.github.io/<repo>/`).
+- **GitHub Repository**: [https://github.com/ahsanjust/world_explorer](https://github.com/ahsanjust/world_explorer)
+- **Deployment URL**: [https://ahsanjust.github.io/world_explorer/](https://ahsanjust.github.io/world_explorer/)
   - Base path configured as `./` in `vite.config.ts`.
   - Hash-based static routing (`#/`, `#/explore/:regionId`, `#/explore/:regionId/:subregionId`, `#/explore/:regionId/:subregionId/:countryId`, `#/country/:countryId`).
   - No custom backend/server; APIs must be CORS-friendly CDN or client-side fetch with verified fallback data.

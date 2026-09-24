@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, Globe, MapPin, ArrowRight, CornerDownLeft } from 'lucide-react';
-import { COUNTRY_INDEX, getRegionById } from '../../data';
+import { COUNTRY_INDEX, DATASET_STATS, getRegionById } from '../../data';
 import { CountrySummary } from '../../types/country';
 
 interface CommandPaletteProps {
@@ -244,7 +244,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
           }}
         >
           <span>Use ↑ ↓ to navigate, Enter to teleport</span>
-          <span>12 Flagship Nations Loaded</span>
+          <span>{DATASET_STATS.countryCount} Flagship Nations Loaded</span>
         </div>
       </div>
     </div>

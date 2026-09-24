@@ -249,7 +249,7 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
               transition: 'all var(--transition-fast)',
             }}
           >
-            All Spheres (15)
+            All Spheres ({nodes.length})
           </button>
           {(['asia', 'europe', 'americas', 'africa', 'oceania'] as RegionId[]).map((rId) => {
             const count = nodes.filter((n) => n.regionId === rId).length;

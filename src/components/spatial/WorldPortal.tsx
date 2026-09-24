@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Globe, Map as MapIcon, ArrowRight, Sparkles, Compass, Filter } from 'lucide-react';
 import { GlobeCanvas } from '../globe/GlobeCanvas';
 import { WorldMap2D } from './WorldMap2D';
-import { getAllRegions, getThematicPortals } from '../../data';
+import { getAllRegions, getSubregionsByRegion, getThematicPortals } from '../../data';
 import { RegionId } from '../../types/spatial';
 
 interface WorldPortalProps {
@@ -279,7 +279,7 @@ export const WorldPortal: React.FC<WorldPortalProps> = ({
                         border: '1px solid var(--border-subtle)',
                       }}
                     >
-                      {reg.subregions.length} Subregions
+                      {getSubregionsByRegion(reg.id).length} Subregions
                     </span>
                   </div>
 
