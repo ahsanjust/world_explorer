@@ -21,8 +21,17 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
   const [rankFilter, setRankFilter] = useState<RankFilter>('all');
   const [selectedField, setSelectedField] = useState<string>('all');
 
-  // Country universities filtered
-  const filteredCountryUnis = useMemo(() => {
+  /**
+   * The generated dataset carries up to 20 institutions per country. A dossier
+   * surfaces at most 10 — min(available, 10) — which conveys the country's
+   * academic weight without turning the module into a directory. When records
+   * are withheld the count line says so ("10 of 18") rather than quietly
+   * pretending the country only has ten.
+   */
+  const COUNTRY_UNIVERSITY_LIMIT = 10;
+
+  // Country universities matching the current filters
+  const matchingCountryUnis = useMemo(() => {
     return edu.topUniversities.filter((uni) => {
       // 1. Rank filter — an institution with no licensed rank can never satisfy
       //    a rank tier, so a `null` rank is excluded rather than silently kept.
@@ -49,6 +58,11 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
       return true;
     });
   }, [edu.topUniversities, rankFilter, searchQuery, selectedField]);
+
+  const filteredCountryUnis = useMemo(
+    () => matchingCountryUnis.slice(0, COUNTRY_UNIVERSITY_LIMIT),
+    [matchingCountryUnis]
+  );
 
   // Regional universities filtered
   const filteredGlobalUnis = useMemo(() => {
@@ -276,7 +290,10 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
             Showing{' '}
             <strong style={{ color: activeTab === 'country' ? 'var(--accent-cyan)' : 'var(--accent-gold)' }}>
               {activeTab === 'country' ? filteredCountryUnis.length : filteredGlobalUnis.length}
-            </strong>{' '}
+            </strong>
+            {activeTab === 'country' && matchingCountryUnis.length > COUNTRY_UNIVERSITY_LIMIT && (
+              <> of {matchingCountryUnis.length}</>
+            )}{' '}
             institutions matching filter criteria
           </div>
         </div>

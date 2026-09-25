@@ -21,7 +21,7 @@
      (or omit the flag) for a clean re-query.
 
    WHY GENERATED RATHER THAN HAND-TYPED
-     The operator asked for up to 20 universities per country with a working
+     The operator asked for up to 10 universities per country with a working
      link for each — several hundred verified records. Typing that by hand would
      guarantee invented URLs and duplicated entries. Generating it from a single
      query means every field has one provable origin and the whole set can be
@@ -53,7 +53,7 @@ const ENDPOINT = 'https://query.wikidata.org/sparql';
 const USER_AGENT =
   'WorldExplorerAtlas/1.0 (static-site build script; https://github.com/ahsanjust/world_explorer)';
 const RETRIEVED = '2026-09-25';
-const MAX_UNIVERSITIES_PER_COUNTRY = 20;
+const MAX_UNIVERSITIES_PER_COUNTRY = 10;
 const MAX_LANDMARKS_PER_COUNTRY = 15;
 /**
  * Recognition floor for landmarks, in Wikipedia language editions.
