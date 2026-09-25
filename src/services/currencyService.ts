@@ -10,27 +10,34 @@ let memoryMeta: { date: string; fetchedAt: number; source: CurrencySourceType } 
 // Baseline seed fallback in case both CDNs fail (offline mode)
 const BASELINE_SEED_RATES: Record<string, number> = {
   usd: 1.0,
-  qar: 3.64, // Pegged
-  aed: 3.6725, // Pegged
-  sar: 3.75, // Pegged
-  kwd: 0.307,
-  jpy: 153.4,
-  eur: 0.92,
-  gbp: 0.79,
-  chf: 0.88,
-  sgd: 1.34,
-  aud: 1.51,
-  cad: 1.36,
-  brl: 5.45,
-  kes: 129.5,
-  inr: 83.5,
-  cny: 7.24,
-  nok: 10.6,
-  sek: 10.4,
-  dkk: 6.87,
-  krw: 1375.0,
-  zar: 18.2,
+  qar: 3.64, // Pegged Qatari Riyal
+  aed: 3.6725, // Pegged UAE Dirham
+  sar: 3.75, // Pegged Saudi Riyal
+  kwd: 0.307, // Kuwaiti Dinar
+  bhd: 0.376, // Pegged Bahraini Dinar
+  omr: 0.385, // Pegged Omani Rial
+  jod: 0.709, // Pegged Jordanian Dinar
+  try: 34.2, // Turkish Lira
+  egp: 48.6, // Egyptian Pound
+  mad: 9.85, // Moroccan Dirham
+  dzd: 134.5, // Algerian Dinar
+  tnd: 3.08, // Tunisian Dinar
+  ils: 3.72, // Israeli Shekel
+  iqd: 1310.0, // Iraqi Dinar
+  gel: 2.73, // Georgian Lari
+  azn: 1.70, // Pegged Azerbaijani Manat
+  amd: 387.0, // Armenian Dram
+  afn: 69.5, // Afghan Afghani
+  lbp: 89500.0, // Lebanese Pound
+  syp: 13000.0, // Syrian Pound
+  yer: 250.0, // Yemeni Rial
+  sdg: 601.0, // Sudanese Pound
+  lyd: 4.82, // Libyan Dinar
+  irr: 42000.0, // Iranian Rial
+  eur: 0.92, // Euro (Cyprus)
   bdt: 121.5, // Bangladeshi Taka
+  gbp: 0.79,
+  jpy: 153.4,
 };
 
 /**

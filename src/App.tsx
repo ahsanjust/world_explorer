@@ -207,6 +207,7 @@ export const App: React.FC = () => {
         ) : (
           <WorldPortal
             onSelectRegion={navigateRegion}
+            onSelectSubregion={navigateSubregion}
             onSelectCountry={navigateCountry}
             onOpenFilter={() => setIsFilterOpen(true)}
             onOpenThematic={(portalId) => {

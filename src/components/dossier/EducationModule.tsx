@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { GraduationCap, ExternalLink, Search, Filter, Globe, Building2, BookOpen, Award } from 'lucide-react';
+import {GraduationCap, ExternalLink, Search, Globe} from 'lucide-react';
 import { CountryProfile } from '../../types/country';
-import { TOP_GLOBAL_UNIVERSITIES, GlobalUniversity } from '../../data/universities';
+import {TOP_GLOBAL_UNIVERSITIES} from '../../data/universities';
 
 interface EducationModuleProps {
   country: CountryProfile;
@@ -24,10 +24,12 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
   // Country universities filtered
   const filteredCountryUnis = useMemo(() => {
     return edu.topUniversities.filter((uni) => {
-      // 1. Rank filter
-      if (rankFilter === 'top50' && uni.globalRankQs > 50) return false;
-      if (rankFilter === 'top100' && uni.globalRankQs > 100) return false;
-      if (rankFilter === 'top200' && uni.globalRankQs > 200) return false;
+      // 1. Rank filter — an institution with no licensed rank can never satisfy
+      //    a rank tier, so a `null` rank is excluded rather than silently kept.
+      if (rankFilter !== 'all') {
+        const maxRank = rankFilter === 'top50' ? 50 : rankFilter === 'top100' ? 100 : 200;
+        if (uni.globalRankQs === null || uni.globalRankQs > maxRank) return false;
+      }
 
       // 2. Search query (name, city, notable fields)
       if (searchQuery.trim()) {
@@ -48,12 +50,13 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
     });
   }, [edu.topUniversities, rankFilter, searchQuery, selectedField]);
 
-  // Global universities filtered
+  // Regional universities filtered
   const filteredGlobalUnis = useMemo(() => {
     return TOP_GLOBAL_UNIVERSITIES.filter((uni) => {
-      if (rankFilter === 'top50' && uni.globalRankQs > 50) return false;
-      if (rankFilter === 'top100' && uni.globalRankQs > 100) return false;
-      if (rankFilter === 'top200' && uni.globalRankQs > 200) return false;
+      if (rankFilter !== 'all') {
+        const maxRank = rankFilter === 'top50' ? 50 : rankFilter === 'top100' ? 100 : 200;
+        if (uni.globalRankQs === null || uni.globalRankQs > maxRank) return false;
+      }
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -140,7 +143,7 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
         </div>
 
         <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginBottom: '1.75rem', maxWidth: '780px' }}>
-          Explore national research centers and global elite institutions with direct links to official university websites, QS global ranks, and notable academic fields.
+          Explore national research centers and global elite institutions with direct links to official university websites, QS global ranks where a licensed ranking exists, and notable academic fields.
         </p>
 
         {/* 3 Macro Academic Stats */}
@@ -304,9 +307,11 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
                       <h4 style={{ fontWeight: 700, fontSize: 'var(--text-base)', color: 'var(--text-primary)' }}>
                         {uni.name}
                       </h4>
-                      <span className="badge badge-gold" style={{ flexShrink: 0, fontSize: '11px', fontWeight: 700 }}>
-                        QS #{uni.globalRankQs}
-                      </span>
+                      {uni.globalRankQs !== null && (
+                        <span className="badge badge-gold" style={{ flexShrink: 0, fontSize: '11px', fontWeight: 700 }}>
+                          QS #{uni.globalRankQs}
+                        </span>
+                      )}
                     </div>
 
                     <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', marginBottom: '0.85rem' }}>
@@ -380,7 +385,7 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    borderLeft: `3px solid ${uni.globalRankQs <= 10 ? 'var(--accent-gold)' : 'var(--accent-cyan)'}`,
+                    borderLeft: `3px solid ${uni.globalRankQs !== null && uni.globalRankQs <= 50 ? 'var(--accent-gold)' : 'var(--accent-cyan)'}`,
                   }}
                 >
                   <div>
@@ -394,9 +399,15 @@ export const EducationModule: React.FC<EducationModuleProps> = ({ country }) => 
                           {uni.name}
                         </h4>
                       </div>
-                      <span className="badge badge-gold" style={{ flexShrink: 0, fontSize: '11px', fontWeight: 800 }}>
-                        QS #{uni.globalRankQs}
-                      </span>
+                      {uni.globalRankQs !== null ? (
+                        <span className="badge badge-gold" style={{ flexShrink: 0, fontSize: '11px', fontWeight: 800 }}>
+                          QS #{uni.globalRankQs}
+                        </span>
+                      ) : (
+                        <span className="badge badge-muted" style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600 }}>
+                          {uni.type}
+                        </span>
+                      )}
                     </div>
 
                     <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', marginBottom: '0.85rem' }}>

@@ -58,7 +58,16 @@ export const TopNav: React.FC<TopNavProps> = ({
         {/* Left: Brand Identity & Breadcrumbs */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', overflow: 'hidden' }}>
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="World Explorer — return to the world view"
             onClick={onNavigateWorld}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onNavigateWorld();
+              }
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -98,7 +107,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 WORLD EXPLORER
               </div>
               <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Planetary Observatory
+                Greater Middle East Atlas
               </div>
             </div>
           </div>

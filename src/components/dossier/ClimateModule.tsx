@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sun, CloudRain, Thermometer, Wind } from 'lucide-react';
+import {Sun} from 'lucide-react';
 import { CountryProfile, ClimographPoint } from '../../types/country';
 
 interface ClimateModuleProps {

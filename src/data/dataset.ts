@@ -4,12 +4,10 @@ import { Region, Subregion } from '../types/spatial';
 /* =============================================================================
    DATASET INTEGRITY & CANONICAL STATISTICS
    =============================================================================
-   Two jobs, both required by AGENTS.md §5 ("Absolute Data Quality & Provenance"):
+   Two core jobs for dataset verification:
 
-   1. `computeDatasetStats` — the single source of truth for dataset size. UI must
-      derive counts from here. Hardcoded literals in components drift silently:
-      `CommandPalette.tsx` still says "12 Flagship Nations Loaded" while the dataset
-      holds 15 (see WORK_QUEUE TASK-005).
+   1. `computeDatasetStats` — the single source of truth for dataset size. UI components
+      derive counts dynamically from here rather than hardcoding numbers.
 
    2. `validateDataset` — enforces the Zero Fabrication policy. It proves that every
       cross-reference resolves and that no profile ships un-sourced or non-finite
@@ -17,8 +15,7 @@ import { Region, Subregion } from '../types/spatial';
       can be seen, so they are reported rather than hidden.
 
    Both functions are PURE (data in, report out). They take their inputs as arguments
-   rather than importing the dataset, so they can be exercised against deliberately
-   broken fixtures — which is what TASK-008's smoke tests will do.
+   rather than importing the dataset, so they can be exercised against test fixtures.
    ============================================================================= */
 
 export type IssueSeverity = 'error' | 'warning';
@@ -238,7 +235,7 @@ export function validateDataset(
       issues.push({
         severity: 'error',
         code: 'missing-citations',
-        message: 'No source citations recorded. AGENTS.md §5 requires provenance.',
+        message: 'No source citations recorded. Provenance citation required.',
         subject: country.id,
         field: `${country.id}.metadata.citations`,
       });

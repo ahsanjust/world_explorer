@@ -10,8 +10,8 @@ export const QATAR: CountryProfile = {
   nativeNames: [
     { languageCode: 'ara', common: 'قطر', official: 'دولة قطر' },
   ],
-  regionId: 'asia',
-  subregionId: 'middle-east',
+  regionId: 'middle-east',
+  subregionId: 'arabian-peninsula',
   capital: {
     name: 'Doha',
     coordinates: [25.2854, 51.5310],
@@ -250,7 +250,8 @@ export const QATAR: CountryProfile = {
   },
 
   analyticalPeers: {
-    economicTwins: ['united-arab-emirates', 'singapore', 'norway'],
+    // Strict ME scope: peers must reference authored in-app dossiers only.
+    economicTwins: ['united-arab-emirates'],
     climaticTwins: ['united-arab-emirates', 'egypt'],
     regionalNeighbors: ['united-arab-emirates'],
   },

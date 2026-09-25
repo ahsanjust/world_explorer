@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Landmark, ArrowUpRight, ArrowDownRight, Layers, Coins } from 'lucide-react';
+import {TrendingUp, Coins} from 'lucide-react';
 import { CountryProfile } from '../../types/country';
 import { BenchmarkGauge } from '../common/BenchmarkGauge';
 import { GLOBAL_BENCHMARK, REGIONAL_BENCHMARKS } from '../../data/benchmarks';

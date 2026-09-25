@@ -1,5 +1,5 @@
 import React from 'react';
-import { Landmark, Utensils, Compass, Sparkles, Building, Hotel } from 'lucide-react';
+import {Landmark, Utensils, Compass, Sparkles} from 'lucide-react';
 import { CountryProfile } from '../../types/country';
 
 interface CultureHeritageModuleProps {

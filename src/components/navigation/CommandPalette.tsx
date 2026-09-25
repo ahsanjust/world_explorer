@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, X, Globe, MapPin, ArrowRight, CornerDownLeft } from 'lucide-react';
+import { Search, X, MapPin, CornerDownLeft } from 'lucide-react';
 import { COUNTRY_INDEX, DATASET_STATS, getRegionById } from '../../data';
-import { CountrySummary } from '../../types/country';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -9,7 +8,19 @@ interface CommandPaletteProps {
   onSelectCountry: (countryId: string) => void;
 }
 
+/**
+ * Visibility gate only — all interactive state lives in `PalettePanel`, which
+ * unmounts whenever the palette closes. Every reopen therefore starts with a
+ * fresh query and selection *without* a setState-in-effect (the lint-flagged
+ * pattern), and it stays correct even when the parent toggles the palette shut
+ * itself (the Cmd+K toggle in App.tsx), bypassing the palette's own close paths.
+ */
 export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onSelectCountry }) => {
+  if (!isOpen) return null;
+  return <PalettePanel onClose={onClose} onSelectCountry={onSelectCountry} />;
+};
+
+const PalettePanel: React.FC<Omit<CommandPaletteProps, 'isOpen'>> = ({ onClose, onSelectCountry }) => {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -29,12 +40,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     : COUNTRY_INDEX;
 
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery('');
-      setSelectedIndex(0);
-    }
-  }, [isOpen]);
+    // Mount-time focus. Focus is DOM-only (no setState) and the timer is
+    // cleaned up if the palette closes before it fires.
+    const timer = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Keyboard navigation within the palette
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -56,8 +66,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div
       style={{
@@ -76,6 +84,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search countries"
         style={{
           width: '100%',
           maxWidth: '640px',
@@ -84,6 +95,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
           borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-lg), 0 0 35px rgba(229, 181, 88, 0.12)',
           overflow: 'hidden',
+          /* Entrance: the shared `fadeIn` keyframe (base.css). Global
+             reduced-motion block neutralises it for users who ask for it. */
+          animation: 'fadeIn 0.16s ease-out',
         }}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
@@ -101,8 +115,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
           <Search size={20} color="var(--accent-gold)" />
           <input
             ref={inputRef}
+            id="country-search-input"
             type="text"
-            placeholder="Teleport to country, capital, or code... (e.g. Qatar, Tokyo, QAT)"
+            role="combobox"
+            aria-expanded={filtered.length > 0}
+            aria-controls="country-search-listbox"
+            aria-autocomplete="list"
+            aria-activedescendant={
+              filtered[selectedIndex] ? `country-option-${filtered[selectedIndex].id}` : undefined
+            }
+            aria-label="Search countries by name, capital, or code"
+            placeholder="Teleport to country, capital, or code... (e.g. Muscat, Oman, OMN)"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -120,7 +143,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
           />
           {query && (
             <button
+              type="button"
               onClick={() => setQuery('')}
+              aria-label="Clear search query"
               style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer' }}
             >
               <X size={16} />
@@ -140,9 +165,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
         </div>
 
         {/* Results List */}
-        <div style={{ maxHeight: '360px', overflowY: 'auto', padding: '0.5rem' }}>
+        <div
+          id="country-search-listbox"
+          role="listbox"
+          aria-label="Matching countries"
+          style={{ maxHeight: '360px', overflowY: 'auto', padding: '0.5rem' }}
+        >
           {filtered.length === 0 ? (
-            <div style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-tertiary)' }}>
+            <div
+              role="status"
+              style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-tertiary)' }}
+            >
               No countries found matching "{query}"
             </div>
           ) : (
@@ -152,6 +185,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
               return (
                 <div
                   key={country.id}
+                  id={`country-option-${country.id}`}
+                  role="option"
+                  aria-selected={isSelected}
                   onClick={() => {
                     onSelectCountry(country.id);
                     onClose();
@@ -244,7 +280,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
           }}
         >
           <span>Use ↑ ↓ to navigate, Enter to teleport</span>
-          <span>{DATASET_STATS.countryCount} Flagship Nations Loaded</span>
+          <span>{DATASET_STATS.countryCount} Dossiers Published</span>
         </div>
       </div>
     </div>

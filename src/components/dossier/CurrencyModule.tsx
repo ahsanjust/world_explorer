@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, ArrowRightLeft, ShieldCheck, Info, Coins } from 'lucide-react';
+import {DollarSign, ArrowRightLeft, ShieldCheck, Info} from 'lucide-react';
 import { CountryProfile } from '../../types/country';
 import { useLiveCurrency } from '../../hooks/useLiveCurrency';
 
@@ -254,6 +254,7 @@ export const CurrencyModule: React.FC<CurrencyModuleProps> = ({ country }) => {
                     key={amt}
                     type="button"
                     onClick={() => setInputAmount(amt)}
+                    aria-label={`Set amount to ${amt} ${baseCurrency}`}
                     style={{
                       background: inputAmount === amt ? 'rgba(229, 181, 88, 0.2)' : 'rgba(255, 255, 255, 0.05)',
                       border: `1px solid ${inputAmount === amt ? 'var(--accent-gold)' : 'var(--border-subtle)'}`,

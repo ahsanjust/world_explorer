@@ -31,7 +31,7 @@ export const RegionPortal: React.FC<RegionPortalProps> = ({
         <div className="container">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.75rem' }}>
             <span className="badge" style={{ background: `${region.color}20`, color: region.color, border: `1px solid ${region.color}50` }}>
-              Continental Sphere
+              Sovereign Sphere: Greater Middle East
             </span>
             <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
               {region.hemisphere} Hemisphere
@@ -66,7 +66,9 @@ export const RegionPortal: React.FC<RegionPortalProps> = ({
             <div className="glass-panel" style={{ padding: '1rem 1.25rem' }}>
               <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>Total Population</span>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '2px' }}>
-                {(region.totalPopulation / 1000000000).toFixed(2)} Billion
+                {region.totalPopulation != null
+                  ? `${(region.totalPopulation / 1000000).toFixed(0)} Million`
+                  : '—'}
               </div>
             </div>
 
@@ -150,7 +152,7 @@ export const RegionPortal: React.FC<RegionPortalProps> = ({
       <section style={{ padding: '2.5rem 0' }}>
         <div className="container">
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: '0.5rem' }}>
-            Flagship Sovereign Nations in {region.name}
+            All 26 Sovereign Nations in {region.name}
           </h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)', marginBottom: '1.5rem' }}>
             Deep socio-economic briefings, verified demographics, and live daily central bank currency rates.

@@ -1,0 +1,82 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Sudan — full sovereign dossier (subregion: north-africa).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const SUDAN: CountryProfile = buildSovereignProfile({
+    id: 'sudan',
+    iso2: 'SD',
+    iso3: 'SDN',
+    unCode: '729',
+    name: 'Sudan',
+    officialName: 'Republic of the Sudan',
+    nativeCommon: 'السودان',
+    nativeOfficial: 'جمهورية السودان',
+    subregionId: 'north-africa',
+    capitalName: 'Khartoum',
+    capitalCoords: [15.5007, 32.5599],
+    majorCities: ['Khartoum', 'Omdurman', 'Port Sudan', 'Kassala', 'El Obeid', 'Wad Madani', 'Nyala'],
+    flagEmoji: '🇸🇩',
+    flagColors: ['#D21034', '#FFFFFF', '#000000', '#007229'],
+    tagline: 'Confluence of the Blue and White Niles, ancient Kingdom of Kush, and more ancient pyramids than Egypt.',
+    overview: 'At the geographic confluence of the Blue and White Niles, Sudan links the Arab world to sub-Saharan Africa. The ancient Kingdom of Kush built more than 200 steep-sided royal pyramids at Meroë.',
+    areaKm2: 1861484,
+    coastlineKm: 853,
+    borders: [
+      { iso3: 'EGY', name: 'Egypt', lengthKm: 1273 },
+      { iso3: 'LBY', name: 'Libya', lengthKm: 383 },
+      { iso3: 'TCD', name: 'Chad', lengthKm: 1360 },
+      { iso3: 'SSD', name: 'South Sudan', lengthKm: 1937 },
+      { iso3: 'ETH', name: 'Ethiopia', lengthKm: 723 },
+      { iso3: 'ERI', name: 'Eritrea', lengthKm: 605 },
+    ],
+    highestName: 'Deriba Caldera',
+    highestElevation: 3042,
+    lowestName: 'Red Sea',
+    lowestElevation: 0,
+    timezone: 'Africa/Khartoum (UTC+2)',
+    coordinates: [12.8628, 30.2176],
+    population: 48100000,
+    medianAge: 19.8,
+    urbanizationRate: 36.2,
+    lifeExpectancy: 65.3,
+    fertilityRate: 4.2,
+    gdpNominalUsdBillions: 34.0,
+    gdpPppUsdBillions: 160.0,
+    gdpPerCapitaPppUsd: 3400,
+    currencyCode: 'SDG',
+    currencyName: 'Sudanese Pound',
+    currencySymbol: 'ج.س',
+    isPegged: false,
+    fallbackRate: 600.0,
+    literacyRate: 60.7,
+    tertiaryEnrollment: 17.0,
+    safetyIndex: 32.0,
+    crimeIndex: 68.0,
+    peaceIndexRank: 155,
+    peaceIndexScore: 3.32,
+    koppenCode: 'BWh',
+    koppenTitle: 'Tropical Desert to Sahelian Savanna',
+    climateSummary: 'Hyper-arid desert in the north; semi-arid savanna with summer tropical rainfall in the south.',
+    avgTemp: 29.5,
+    avgRainfall: 160,
+    unescoCount: 3,
+    landmarks: [
+      { name: 'Pyramids of Meroë', location: 'River Nile State', description: 'Over 200 steep sandstone royal pyramids of the ancient Kushite Kingdom.', imageUrl: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop' },
+      { name: 'Gebel Barkal & Napatan Region', location: 'Karima', description: 'Sacred mountain and sprawling archaeological ruins of the 25th Dynasty Black Pharaohs.', imageUrl: 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Ful Medames Sudanese', description: 'Fava beans slow-cooked with cumin, topped with fresh sesame oil and crumbled gibna bayda cheese.' },
+      { name: 'Kisra', description: 'Paper-thin fermented sorghum flatbread accompanied by mullah okra stew.' },
+    ],
+    languages: [
+      { name: 'Arabic', isOfficial: true },
+      { name: 'English', isOfficial: true },
+    ],
+    mainIndustries: ['Agriculture (sorghum, gum arabic & cotton)', 'Gold Mining', 'Livestock & Meat', 'Sugar Processing', 'Oilseeds'],
+    topExports: ['Gold', 'Gum arabic', 'Livestock', 'Oilseeds', 'Cotton'],
+});

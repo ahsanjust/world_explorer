@@ -10,7 +10,7 @@ export const EGYPT: CountryProfile = {
   nativeNames: [
     { languageCode: 'ara', common: 'مصر', official: 'جمهورية مصر العربية' },
   ],
-  regionId: 'africa',
+  regionId: 'middle-east',
   subregionId: 'north-africa',
   capital: {
     name: 'Cairo',
@@ -225,9 +225,12 @@ export const EGYPT: CountryProfile = {
   },
 
   analyticalPeers: {
-    economicTwins: ['kenya', 'brazil'],
+    // Strict ME scope: peers must reference authored in-app dossiers only.
+    // Egypt's structural economic peers (e.g. mid-income North African states)
+    // are outside the current coverage; honesty over filler.
+    economicTwins: [],
     climaticTwins: ['qatar', 'united-arab-emirates'],
-    regionalNeighbors: ['kenya', 'qatar'],
+    regionalNeighbors: [],
   },
 
   metadata: {

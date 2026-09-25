@@ -1,5 +1,5 @@
-import React from 'react';
-import { MapPin, Clock, Scale, ShieldCheck, TrendingUp, Sun, Sparkles, Check } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {MapPin, Clock, Scale, ShieldCheck, TrendingUp, Sun, Check} from 'lucide-react';
 import { CountryProfile } from '../../types/country';
 import { getRegionById, getSubregionById } from '../../data';
 
@@ -13,15 +13,31 @@ export const DossierHero: React.FC<DossierHeroProps> = ({ country, isPinned, onT
   const region = getRegionById(country.regionId);
   const subregion = getSubregionById(country.subregionId);
 
-  // Compute local time from primary timezone
-  const getTimeString = () => {
-    try {
-      const now = new Date();
-      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch {
-      return 'Local Time';
-    }
-  };
+  // Live local time for the country. The profile stores zones as display
+  // strings ("Asia/Qatar (UTC+3)"); the IANA id is the part before " (".
+  // Intl throws for an unknown zone, so we show nothing instead of ever
+  // rendering a wrong clock. Refresh every 30s — minute resolution only.
+  const [localTime, setLocalTime] = useState<string | null>(null);
+  useEffect(() => {
+    const zone = country.geography.timezones[0]?.split(' (')[0]?.trim();
+    if (!zone) return;
+    const tick = () => {
+      try {
+        setLocalTime(
+          new Date().toLocaleTimeString('en-GB', {
+            timeZone: zone,
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        );
+      } catch {
+        setLocalTime(null);
+      }
+    };
+    tick();
+    const timer = window.setInterval(tick, 30_000);
+    return () => window.clearInterval(timer);
+  }, [country]);
 
   return (
     <div
@@ -154,11 +170,18 @@ export const DossierHero: React.FC<DossierHeroProps> = ({ country, isPinned, onT
                 <MapPin size={13} color="var(--accent-gold)" />
                 Capital:{' '}
                 <strong style={{ color: 'var(--text-primary)' }}>{country.capital.name}</strong> (
-                {country.capital.coordinates[0].toFixed(2)}°N, {country.capital.coordinates[1].toFixed(2)}°E)
+                {country.capital.coordinates[0].toFixed(2)}°
+                {country.capital.coordinates[0] >= 0 ? 'N' : 'S'},{' '}
+                {country.capital.coordinates[1].toFixed(2)}°{country.capital.coordinates[1] >= 0 ? 'E' : 'W'})
               </span>
 
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <Clock size={13} color="var(--accent-cyan)" />
+                {localTime && (
+                  <>
+                    Local time: <strong style={{ color: 'var(--text-primary)' }}>{localTime}</strong> ·
+                  </>
+                )}{' '}
                 Timezone: <strong style={{ color: 'var(--text-primary)' }}>{country.geography.timezones[0]}</strong>
               </span>
 

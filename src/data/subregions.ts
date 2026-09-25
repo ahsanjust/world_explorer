@@ -1,112 +1,128 @@
 import { Subregion } from '../types/spatial';
 
+/* =============================================================================
+   MIDDLE EAST SUBREGIONS — THE APP'S CANONICAL COUNTRY LIST (26 STATES)
+   =============================================================================
+   This file is the single source of truth for **which countries the product
+   covers**. `Region.countryCount`, `MIDDLE_EAST_ISO3` (the map's in-scope set),
+   `PENDING_DOSSIERS` and `validateDataset()` all derive from it, so a country
+   cannot be present in one place and missing from another.
+
+   Never re-type this list anywhere else. A duplicate copy is precisely how a
+   country gets silently dropped. It is the central authority for in-scope states.
+
+   SCOPE DEFINITION — Greater Middle East:
+     MENA on a geographic basis (the common "Middle East / West Asia" political
+     definition ∪ North Africa per the UN geoscheme) **plus** the South Caucasus
+     and Afghanistan, which is the standard "Greater Middle East" framing.
+
+     The rule is **geographic, not institutional**. That is why the World Bank's
+     operational MENA grouping is not copied wholesale — it also contains
+     Djibouti (Horn of Africa) and historically Malta (Southern Europe).
+
+   GEOMETRY
+     `centerCoordinates` and `bounds` are **derived**, not estimated: each
+     subregion's box is the union of its member states' geometry in
+     `public/maps/world-countries-50m.geojson`. Nothing in this file is a guess.
+   ============================================================================= */
+
 export const SUBREGIONS: Subregion[] = [
-  // ASIA
   {
-    id: 'middle-east',
-    regionId: 'asia',
-    name: 'Middle East & West Asia',
-    description: 'The historic crossroads of three continents, defined by sovereign wealth, energy resources, ancient civilizations, and rapid hyper-modernization.',
-    countries: ['QAT', 'ARE', 'SAU', 'OMN', 'KWT', 'BHR'],
-    centerCoordinates: [25.3548, 51.1839],
-    bounds: [[12.0, 34.0], [38.0, 60.0]],
+    id: 'arabian-peninsula',
+    regionId: 'middle-east',
+    name: 'Arabian Peninsula & Gulf',
+    description:
+      'The peninsula and its Gulf littoral: the birthplace of Islam, the world’s largest hydrocarbon reserves, and the Gulf Cooperation Council economies that converted energy rents into sovereign wealth funds and hyper-modern cities.',
+    countries: ['ARE', 'BHR', 'KWT', 'OMN', 'QAT', 'SAU', 'YEM'],
+    centerCoordinates: [22.2, 47.2],
+    bounds: [
+      [12.3, 34.6],
+      [32.1, 59.8],
+    ],
   },
   {
-    id: 'east-asia',
-    regionId: 'asia',
-    name: 'East Asia',
-    description: 'Global epicenter of high-tech manufacturing, semiconductor supply chains, mega-cities, and millennia-old philosophical traditions.',
-    countries: ['JPN', 'KOR', 'CHN', 'TWN'],
-    centerCoordinates: [36.2048, 138.2529],
-    bounds: [[20.0, 100.0], [50.0, 145.0]],
+    id: 'levant',
+    regionId: 'middle-east',
+    name: 'Levant & Eastern Mediterranean',
+    description:
+      'The eastern Mediterranean seaboard and its hinterland — the land bridge between Egypt, Anatolia and Mesopotamia, home to some of the oldest continuously inhabited cities on Earth and to the origins of three major world faiths.',
+    countries: ['CYP', 'ISR', 'JOR', 'LBN', 'PSE', 'SYR'],
+    centerCoordinates: [33.3, 37.4],
+    bounds: [
+      [29.2, 32.3],
+      [37.3, 42.4],
+    ],
   },
   {
-    id: 'southeast-asia',
-    regionId: 'asia',
-    name: 'Southeast Asia',
-    description: 'Dynamic tropical archipelago and continental trade routes connecting the Indian Ocean and the South China Sea.',
-    countries: ['SGP', 'MYS', 'IDN', 'THA', 'VNM'],
-    centerCoordinates: [1.3521, 103.8198],
-    bounds: [[-11.0, 95.0], [21.0, 141.0]],
+    id: 'anatolia-mesopotamia-iran',
+    regionId: 'middle-east',
+    name: 'Anatolia, Mesopotamia & Iran',
+    description:
+      'The Anatolian plateau between the Black Sea and the Mediterranean, the Tigris–Euphrates basin that cradled the first cities and writing systems, and the Iranian plateau bridging the Middle East to Central and South Asia.',
+    countries: ['IRN', 'IRQ', 'TUR'],
+    centerCoordinates: [33.6, 44.5],
+    bounds: [
+      [25.1, 25.7],
+      [42.1, 63.3],
+    ],
   },
-
-  // EUROPE
-  {
-    id: 'western-europe',
-    regionId: 'europe',
-    name: 'Western Europe',
-    description: 'Economic and diplomatic core of Europe, renowned for advanced industry, high median wealth, alpine scenery, and historic capitals.',
-    countries: ['CHE', 'DEU', 'FRA', 'NLD', 'BEL', 'AUT'],
-    centerCoordinates: [46.8182, 8.2275],
-    bounds: [[42.0, -5.0], [55.0, 16.0]],
-  },
-  {
-    id: 'northern-europe',
-    regionId: 'europe',
-    name: 'Northern Europe',
-    description: 'The Nordic and Baltic states leading global rankings in human development, institutional trust, environmental sustainability, and innovation.',
-    countries: ['NOR', 'SWE', 'DNK', 'FIN', 'ISL', 'GBR'],
-    centerCoordinates: [60.472, 8.4689],
-    bounds: [[50.0, -25.0], [71.0, 32.0]],
-  },
-
-  // AMERICAS
-  {
-    id: 'north-america',
-    regionId: 'americas',
-    name: 'North America',
-    description: 'Major global financial markets, premier research universities, vast continental biome diversity, and leading technological hubs.',
-    countries: ['USA', 'CAN', 'MEX'],
-    centerCoordinates: [37.0902, -95.7129],
-    bounds: [[24.0, -125.0], [50.0, -65.0]],
-  },
-  {
-    id: 'south-america',
-    regionId: 'americas',
-    name: 'South America',
-    description: 'Home to the Amazon river basin, the Andean mountain chain, extraordinary cultural heritage, and vast agricultural and mineral reserves.',
-    countries: ['BRA', 'ARG', 'CHL', 'COL', 'PER'],
-    centerCoordinates: [-14.235, -51.9253],
-    bounds: [[-56.0, -82.0], [13.0, -34.0]],
-  },
-
-  // AFRICA
   {
     id: 'north-africa',
-    regionId: 'africa',
-    name: 'North Africa',
-    description: 'Mediterranean coastline, the Sahara desert, historic Nile basin civilization, and strategic trans-continental maritime gateways.',
-    countries: ['EGY', 'MAR', 'DZA', 'TUN'],
-    centerCoordinates: [26.8206, 30.8025],
-    bounds: [[20.0, -15.0], [37.0, 36.0]],
+    regionId: 'middle-east',
+    name: 'North Africa & Nile Valley',
+    description:
+      'The Mediterranean littoral of Africa, the Nile valley and the Sahara: the Maghreb, Egypt, and Sudan on the Sahelian edge of the desert — Amazigh and Arab cultures whose trade routes and migrations have bound them to the eastern Mediterranean for millennia.',
+    countries: ['DZA', 'EGY', 'LBY', 'MAR', 'SDN', 'TUN'],
+    centerCoordinates: [23.0, 10.8],
+    bounds: [
+      [8.7, -17.0],
+      [37.3, 38.6],
+    ],
   },
   {
-    id: 'east-africa',
-    regionId: 'africa',
-    name: 'East Africa',
-    description: 'The Great Rift Valley, world-famous wildlife conservation ecosystems, coffee origin highlands, and East Africa’s technological Silicon Savannah.',
-    countries: ['KEN', 'TZA', 'RWA', 'ETH', 'UGA'],
-    centerCoordinates: [-0.0236, 37.9062],
-    bounds: [[-12.0, 28.0], [15.0, 51.0]],
-  },
-  {
-    id: 'southern-africa',
-    regionId: 'africa',
-    name: 'Southern Africa',
-    description: 'Rich mineral endowments, diverse ecological biomes, the Cape floral kingdom, and Southern Africa’s industrial and financial engine.',
-    countries: ['ZAF', 'NAM', 'BWA'],
-    centerCoordinates: [-30.5595, 22.9375],
-    bounds: [[-35.0, 16.0], [-22.0, 33.0]],
-  },
-
-  // OCEANIA
-  {
-    id: 'australasia',
-    regionId: 'oceania',
-    name: 'Australasia',
-    description: 'Australia and New Zealand, featuring isolated biodiversity, high personal freedom, expansive coastlines, and pristine natural wonders.',
-    countries: ['AUS', 'NZL'],
-    centerCoordinates: [-25.2744, 133.7751],
-    bounds: [[-48.0, 110.0], [-10.0, 180.0]],
+    id: 'caucasus-afghanistan',
+    regionId: 'middle-east',
+    name: 'Caucasus & Afghanistan',
+    description:
+      'The northern rim of the region: the South Caucasus between the Black and Caspian seas, sitting on the historic Silk Road corridor, and Afghanistan, the mountain crossroads between the Iranian plateau, Central Asia and the Indian subcontinent.',
+    countries: ['AFG', 'ARM', 'AZE', 'GEO'],
+    centerCoordinates: [36.5, 57.5],
+    bounds: [
+      [29.4, 40.0],
+      [43.6, 74.9],
+    ],
   },
 ];
+
+/**
+ * Every ISO3 code the product covers, flattened from `SUBREGIONS`.
+ *
+ * Derived rather than re-typed, so the map, the validator and the coverage
+ * notices can never disagree about who is in scope.
+ */
+export const MIDDLE_EAST_COUNTRY_ISO3: readonly string[] = SUBREGIONS.flatMap(
+  (subregion) => subregion.countries
+);
+
+/** Index for O(1) membership tests (the map calls this per territory per render). */
+const MIDDLE_EAST_ISO3_SET: ReadonlySet<string> = new Set(MIDDLE_EAST_COUNTRY_ISO3);
+
+/**
+ * True when `iso3` is one of the Middle East states the product covers.
+ *
+ * This is the *scope* test and is deliberately separate from "does a dossier
+ * exist": the map must draw all 26 in-scope states as the subject while only a
+ * subset have profiles authored so far.
+ *
+ * Note it cannot be answered from `continent` — Egypt is in Africa and in scope,
+ * Kenya is in Africa and out of scope.
+ */
+export function isMiddleEastCountry(iso3: string | undefined | null): boolean {
+  return !!iso3 && MIDDLE_EAST_ISO3_SET.has(iso3);
+}
+
+/** In-scope ISO3 codes that still have no authored dossier. Roadmap, not a defect. */
+export function findCountriesWithoutDossiers(compiledIso3: readonly string[]): string[] {
+  const compiled = new Set(compiledIso3);
+  return MIDDLE_EAST_COUNTRY_ISO3.filter((iso3) => !compiled.has(iso3));
+}

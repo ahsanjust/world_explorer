@@ -18,6 +18,10 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  /* Anchored sections (dossier rail, in-page nav) must land *below* the sticky
+     TopNav (68px) + StickyNavRail (~56px), otherwise the section heading scrolls
+     underneath them and is hidden on arrival. */
+  scroll-padding-top: calc(var(--header-height) + 56px);
 }
 
 body {
@@ -139,6 +143,35 @@ body {
   border-color: var(--text-secondary);
 }
 
+/* Tactile press feedback: hover lifts, press settles. Without :active the
+   buttons feel flat on touch devices where hover never fires. */
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 6px rgba(229, 181, 88, 0.3);
+  filter: brightness(0.96);
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+  background: var(--bg-surface);
+  border-color: var(--text-tertiary);
+}
+
+/* Reading-progress line riding the top edge of the dossier StickyNavRail.
+   Width comes from `--progress`, written straight to the element by JS
+   (StickyNavRail) so the dossier tree never re-renders while scrolling.
+   The global reduced-motion block neutralises the width transition. */
+.rail-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: var(--progress, 0%);
+  background: linear-gradient(90deg, var(--accent-gold), var(--accent-cyan));
+  box-shadow: 0 0 8px rgba(229, 181, 88, 0.45);
+  transition: width 90ms linear;
+}
+
 /* Pill Badges */
 .badge {
   display: inline-flex;
@@ -182,6 +215,11 @@ body {
   50% { opacity: 1; transform: scale(1.05); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .pulsing-indicator {
   width: 8px;
   height: 8px;
@@ -192,7 +230,7 @@ body {
 }
 
 /* =========================================================================
-   ACCESSIBILITY — FOCUS VISIBILITY (AGENTS.md §4, directive §18)
+   ACCESSIBILITY — FOCUS VISIBILITY
    No component defines its own focus ring, so one global, high-contrast ring
    is provided for keyboard users. Gold on the dark theme clears WCAG AA
    contrast against #07090E and the glass surfaces.
@@ -210,7 +248,7 @@ input:focus-visible {
 }
 
 /* =========================================================================
-   ACCESSIBILITY — REDUCED MOTION (AGENTS.md §4, directive §18)
+   ACCESSIBILITY — REDUCED MOTION
    Neutralises transforms, pulses, and smooth scrolling for users who ask for
    it. `WorldMap2D` additionally honours this in JS (its camera easing is not
    CSS-driven); everything CSS-driven is covered here.
@@ -231,14 +269,16 @@ input:focus-visible {
 
   /* Hover lifts would still move content under a pointer; drop them entirely. */
   .interactive-card:hover,
-  .btn-primary:hover {
+  .btn-primary:hover,
+  .btn-primary:active,
+  .btn-secondary:active {
     transform: none;
   }
 }
 
 /* =========================================================================
    RESPONSIVE FOUNDATIONS
-   Breakpoints used by the app (see AGENTS.md §4):
+   Breakpoints used by the app:
      1280px+ desktop · 768px tablet · 360px mobile
    ========================================================================= */
 

@@ -5,7 +5,7 @@ import {
 } from '../../types/map';
 
 /* =============================================================================
-   PLATE CARRÉE (EQUIRECTANGULAR) PROJECTION
+   PLATE CARRÉE (EQUIRECTANGULAR) PROJECTION — MIDDLE EAST FRAMING
    =============================================================================
    The obvious choice here *is* the simple one. An equirectangular projection is
    an exact affine transform, so:
@@ -13,26 +13,26 @@ import {
      - path data is computed exactly once and never rebuilt,
      - and no projection library is needed.
 
-   Its area/shape distortion is a real cartographic tradeoff, acknowledged in
-   AGENTS.md. At the scale this map is used (continental descent, not surveying)
-   the tradeoff buys a great deal of reliability and performance.
+   Scope (2026-09-25 pivot): the plane now frames ONLY the Middle East & West
+   Asia. The bounds below are the measured Natural Earth 50m extent of the
+   in-scope states (lng 24.7–63.3, lat 12.3–42.1) padded with a viewing margin.
+   At the scale this map is used (regional descent, not surveying) the
+   projection tradeoff buys a great deal of reliability and performance.
    ============================================================================= */
 
-/** Highest latitude rendered. Above this the projection stretches badly and only
- *  Greenland/Arctic ice sits there. */
-export const MAP_MAX_LAT = 84;
-/** Lowest latitude rendered. Excludes Antarctica, which has no region in the
- *  spatial model and would otherwise consume a third of the plate. */
-export const MAP_MIN_LAT = -60;
-export const MAP_MIN_LON = -180;
-export const MAP_MAX_LON = 180;
+/** Highest latitude rendered (covers Anatolia's northern coast). */
+export const MAP_MAX_LAT = 46;
+/** Lowest latitude rendered (clears Yemen's southern coast). */
+export const MAP_MIN_LAT = 6;
+export const MAP_MIN_LON = 18;
+export const MAP_MAX_LON = 70;
 
 /** Total size of the map plane in map units (1 unit = 1 degree). */
-export const MAP_WIDTH = MAP_MAX_LON - MAP_MIN_LON; // 360
-export const MAP_HEIGHT = MAP_MAX_LAT - MAP_MIN_LAT; // 144
+export const MAP_WIDTH = MAP_MAX_LON - MAP_MIN_LON; // 52 (ME plate)
+export const MAP_HEIGHT = MAP_MAX_LAT - MAP_MIN_LAT; // 40 (ME plate)
 
-/** Aspect ratio of the full world plate. */
-export const MAP_ASPECT = MAP_WIDTH / MAP_HEIGHT; // 2.5
+/** Aspect ratio of the Middle East plate. */
+export const MAP_ASPECT = MAP_WIDTH / MAP_HEIGHT; // 1.3
 
 /** Projects `[lon, lat]` into map units where (0,0) is the north-west corner. */
 export function project(lon: number, lat: number): [number, number] {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, ShieldAlert, Award, FileCheck, Scale } from 'lucide-react';
+import {ShieldCheck, Award, FileCheck, Scale} from 'lucide-react';
 import { CountryProfile } from '../../types/country';
 import { BenchmarkGauge } from '../common/BenchmarkGauge';
 import { GLOBAL_BENCHMARK, REGIONAL_BENCHMARKS } from '../../data/benchmarks';

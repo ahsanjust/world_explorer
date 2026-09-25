@@ -1,0 +1,80 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Syria — full sovereign dossier (subregion: levant).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const SYRIA: CountryProfile = buildSovereignProfile({
+    id: 'syria',
+    iso2: 'SY',
+    iso3: 'SYR',
+    unCode: '760',
+    name: 'Syria',
+    officialName: 'Syrian Arab Republic',
+    nativeCommon: 'سوريا',
+    nativeOfficial: 'الجمهورية العربية السورية',
+    subregionId: 'levant',
+    capitalName: 'Damascus',
+    capitalCoords: [33.5138, 36.2765],
+    majorCities: ['Damascus', 'Aleppo', 'Homs', 'Hama', 'Latakia', 'Tartus'],
+    flagEmoji: '🇸🇾',
+    flagColors: ['#CE1126', '#FFFFFF', '#000000', '#007A3D'],
+    tagline: 'Ancient cradle of civilization with Damascus and Aleppo among the oldest continuously inhabited cities on Earth.',
+    overview: 'Connecting the Mediterranean to Mesopotamia, Syria has been a central crossroads of ancient empires, distinguished by majestic Roman colonnades at Palmyra and centuries of Levantine craft.',
+    areaKm2: 185180,
+    coastlineKm: 193,
+    borders: [
+      { iso3: 'TUR', name: 'Türkiye', lengthKm: 822 },
+      { iso3: 'IRQ', name: 'Iraq', lengthKm: 605 },
+      { iso3: 'JOR', name: 'Jordan', lengthKm: 375 },
+      { iso3: 'LBN', name: 'Lebanon', lengthKm: 375 },
+      { iso3: 'ISR', name: 'Israel', lengthKm: 76 },
+    ],
+    highestName: 'Mount Hermon',
+    highestElevation: 2814,
+    lowestName: 'Lake Tiberias shore',
+    lowestElevation: -214,
+    timezone: 'Asia/Damascus (UTC+3)',
+    coordinates: [34.8021, 38.9968],
+    population: 23200000,
+    medianAge: 23.5,
+    urbanizationRate: 55.6,
+    lifeExpectancy: 72.1,
+    fertilityRate: 2.7,
+    gdpNominalUsdBillions: 12.0,
+    gdpPppUsdBillions: 40.0,
+    gdpPerCapitaPppUsd: 2900,
+    currencyCode: 'SYP',
+    currencyName: 'Syrian Pound',
+    currencySymbol: '£S',
+    isPegged: false,
+    fallbackRate: 2500.0,
+    literacyRate: 86.4,
+    tertiaryEnrollment: 38.0,
+    safetyIndex: 31.0,
+    crimeIndex: 69.0,
+    peaceIndexRank: 161,
+    peaceIndexScore: 3.42,
+    koppenCode: 'BSk',
+    koppenTitle: 'Mediterranean Coast to Semi-Arid Steppe',
+    climateSummary: 'Dry and hot summers; mild, wet winters along the Mediterranean; semi-arid steppe interior.',
+    avgTemp: 18.2,
+    avgRainfall: 330,
+    unescoCount: 6,
+    landmarks: [
+      { name: 'Ancient City of Damascus', location: 'Damascus', description: 'One of the oldest continuously inhabited cities on Earth, centered on the Umayyad Mosque.', imageUrl: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop' },
+      { name: 'Krak des Chevaliers', location: 'Homs Governorate', description: 'One of the most important preserved medieval Crusader castles in the world.', imageUrl: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Kibbeh Halabiyeh', description: 'Spiced minced lamb encased in a crispy bulgur crust, shaped into torpedoes and fried.' },
+      { name: 'Fattoush', description: 'Levantine mixed herb salad with crispy fried khubz flatbread, sumac, and pomegranate molasses.' },
+    ],
+    languages: [
+      { name: 'Arabic', isOfficial: true },
+    ],
+    mainIndustries: ['Oil & Gas', 'Agriculture (cotton, wheat & olives)', 'Textiles', 'Cement & Construction', 'Phosphate Mining'],
+    topExports: ['Olive oil', 'Textiles & apparel', 'Phosphates', 'Cotton', 'Spices'],
+});

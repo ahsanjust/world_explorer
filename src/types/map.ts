@@ -1,5 +1,3 @@
-import { RegionId } from './spatial';
-
 /**
  * Minimal GeoJSON surface used by the cartographic layer.
  *
@@ -71,19 +69,23 @@ export interface RenderableCountry {
   area: number;
 }
 
-/** Maps a continent-level `RegionId` onto the continent labels used by the geojson. */
-export const CONTINENTS_BY_REGION: Record<RegionId, string[]> = {
-  africa: ['Africa'],
-  americas: ['North America', 'South America'],
-  asia: ['Asia'],
-  europe: ['Europe'],
-  oceania: ['Oceania'],
-  polar: ['Antarctica'],
-};
+/**
+ * The application scope (2026-09-25 pivot): the Middle East & North Africa.
+ * ISO 3166-1 alpha-3 codes of every state treated as in-scope, used to decide
+ * which territories of the Natural Earth boundary asset are the map's subject.
+ *
+ * **Re-exported, not re-declared.** The canonical list is
+ * `MIDDLE_EAST_COUNTRY_ISO3` in `src/data/subregions.ts`, derived from the
+ * subregion country lists. Two divergent copies of this list already existed
+ * once during the pivot (17 states here vs 21 in the data layer, with the four
+ * Maghreb states missing here) — which is exactly how a country gets dropped
+ * from one surface while surviving in another. Do not re-introduce a literal.
+ */
+export { MIDDLE_EAST_COUNTRY_ISO3 as MIDDLE_EAST_ISO3 } from '../data/subregions';
 
 /**
- * Natural Earth encodes Antarctica and an artificial "Seven seas (open ocean)"
- * polygon. Both are excluded: the app's spatial model has no region for the high
- * southern latitudes and the open-ocean polygon is not a sovereign territory.
+ * Natural Earth encodes an artificial "Seven seas (open ocean)" polygon; it is
+ * excluded everywhere: the open ocean is not a sovereign territory. Antarctica
+ * is likewise out of scope for the ME-only application.
  */
 export const EXCLUDED_CONTINENTS = ['Antarctica', 'Seven seas (open ocean)'];

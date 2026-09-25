@@ -1,0 +1,80 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Algeria — full sovereign dossier (subregion: north-africa).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const ALGERIA: CountryProfile = buildSovereignProfile({
+    id: 'algeria',
+    iso2: 'DZ',
+    iso3: 'DZA',
+    unCode: '012',
+    name: 'Algeria',
+    officialName: 'People’s Democratic Republic of Algeria',
+    nativeCommon: 'الجزائر',
+    nativeOfficial: 'الجمهورية الجزائرية الديمقراطية الشعبية',
+    subregionId: 'north-africa',
+    capitalName: 'Algiers',
+    capitalCoords: [36.7538, 3.0588],
+    majorCities: ['Algiers', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna'],
+    flagEmoji: '🇩🇿',
+    flagColors: ['#006233', '#FFFFFF', '#D21034'],
+    tagline: 'Largest African nation by landmass, spanning the fertile Tell Atlas coast to the vast Saharan oil and gas fields.',
+    overview: 'The largest sovereign nation in Africa and the Mediterranean basin, Algeria combines French and Ottoman colonial architecture in Algiers with magnificent Roman ruins and vast Saharan energy fields.',
+    areaKm2: 2381741,
+    coastlineKm: 1622,
+    borders: [
+      { iso3: 'TUN', name: 'Tunisia', lengthKm: 1010 },
+      { iso3: 'LBY', name: 'Libya', lengthKm: 989 },
+      { iso3: 'MAR', name: 'Morocco', lengthKm: 1559 },
+    ],
+    highestName: 'Mount Tahat',
+    highestElevation: 2908,
+    lowestName: 'Chott Melrhir',
+    lowestElevation: -40,
+    timezone: 'Africa/Algiers (UTC+1)',
+    coordinates: [28.0339, 1.6596],
+    population: 45600000,
+    medianAge: 28.5,
+    urbanizationRate: 75.3,
+    lifeExpectancy: 77.1,
+    fertilityRate: 2.8,
+    gdpNominalUsdBillions: 245.0,
+    gdpPppUsdBillions: 628.0,
+    gdpPerCapitaPppUsd: 13700,
+    currencyCode: 'DZD',
+    currencyName: 'Algerian Dinar',
+    currencySymbol: 'د.ج',
+    isPegged: false,
+    fallbackRate: 134.5,
+    literacyRate: 81.4,
+    tertiaryEnrollment: 54.0,
+    safetyIndex: 52.8,
+    crimeIndex: 47.2,
+    peaceIndexRank: 96,
+    peaceIndexScore: 2.11,
+    koppenCode: 'BWh',
+    koppenTitle: 'Mediterranean Coast to Saharan Desert',
+    climateSummary: 'Temperate Mediterranean coast with wet winters and warm dry summers; vast arid desert interior.',
+    avgTemp: 22.5,
+    avgRainfall: 280,
+    unescoCount: 7,
+    landmarks: [
+      { name: 'Casbah of Algiers', location: 'Algiers', description: 'Unique Islamic medina and fortress overlooking the Mediterranean.', imageUrl: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop' },
+      { name: 'Tassili n’Ajjer', location: 'Illizi Province', description: 'Vast Saharan sandstone plateau with prehistoric rock art.', imageUrl: 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Chakhchoukha', description: 'Torn thin flatbread drenched in spicy tomato broth with lamb and chickpeas.' },
+      { name: 'Couscous Algérien', description: 'Steamed semolina served with garden vegetables and braised mutton.' },
+    ],
+    languages: [
+      { name: 'Arabic', isOfficial: true },
+      { name: 'Tamazight (Berber)', isOfficial: true },
+      { name: 'French', isOfficial: false },
+    ],
+    mainIndustries: ['Oil & Natural Gas', 'Petrochemicals', 'Mining & Phosphates', 'Agriculture', 'Tourism'],
+    topExports: ['Crude oil', 'Natural gas', 'Petroleum products', 'Fertilizers'],
+});

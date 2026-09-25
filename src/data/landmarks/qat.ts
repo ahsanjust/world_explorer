@@ -1,0 +1,135 @@
+/* =============================================================================
+   GENERATED FILE — DO NOT EDIT BY HAND.
+   =============================================================================
+   Places worth visiting in Qatar (QAT) — 9 record(s),
+   ordered by international recognition. Every record has a real image.
+
+   Source:  Wikidata Query Service (https://query.wikidata.org)
+   Licence: CC0 1.0 Universal — public domain dedication. Redistribution is
+            permitted and no attribution is required (recorded anyway, for
+            provenance).
+   Retrieved: 2026-09-25
+   Regenerate: node scripts/build-me-facilities.mjs
+   
+   ============================================================================= */
+import type { Landmark } from '../../types/country';
+
+export const QAT_LANDMARKS: Landmark[] = [
+  {
+    id: 'zubarah-qat',
+    name: 'Zubarah',
+    location: 'Al Shamal',
+    city: 'Al Shamal',
+    category: 'Historical',
+    description: 'ruined and deserted town in Qatar',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FRuins%2520in%2520Zubarah%2520on%2520a%2520cloudy%2520day.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.9833949, 51.0272187],
+    recognizedInLanguages: 42,
+    sourceUrl: 'http://www.wikidata.org/entity/Q2727469',
+  },
+  {
+    id: 'national-museum-of-qatar-qat',
+    name: 'National Museum of Qatar',
+    location: 'Ad-Dawhah',
+    city: 'Ad-Dawhah',
+    category: 'Cultural',
+    description: 'museum in Doha, Qatar',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FNmoq.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.288469292, 51.549263096],
+    recognizedInLanguages: 24,
+    sourceUrl: 'http://www.wikidata.org/entity/Q3084218',
+  },
+  {
+    id: 'imam-muhammad-ibn-abd-al-wahhab-mosque-qat',
+    name: 'Imam Muhammad ibn Abd al-Wahhab Mosque',
+    location: 'Doha',
+    city: 'Doha',
+    category: 'Architectural',
+    description: 'mosque in Doha, Qatar',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FView%2520of%2520Lejbailat%2520and%2520State%2520Mosque.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.317138888, 51.505055555],
+    recognizedInLanguages: 16,
+    sourceUrl: 'http://www.wikidata.org/entity/Q12242846',
+  },
+  {
+    id: 'catholic-church-of-our-lady-of-the-rosary-qat',
+    name: 'Catholic Church of Our Lady of the Rosary',
+    location: 'Doha',
+    city: 'Doha',
+    category: 'Architectural',
+    description: 'Roman Catholic church at the Religious Complex in Abu Hamour, Doha, Qatar',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FChurch%2520of%2520Our%2520Lady%2520of%2520the%2520Rosary%252C%2520Doha%252C%2520Qatar.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.2126, 51.5219],
+    recognizedInLanguages: 14,
+    sourceUrl: 'http://www.wikidata.org/entity/Q630655',
+  },
+  {
+    id: 'qurayn-abu-al-bawl-qat',
+    name: 'Qurayn Abu al Bawl',
+    location: 'Qatar',
+    city: '',
+    category: 'Natural',
+    description: 'mountain',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FAl-Qalail%2520Range%2520depuis%2520la%2520Route%2520Qatar-EAU.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [24.946111111, 51.184444444],
+    recognizedInLanguages: 14,
+    sourceUrl: 'http://www.wikidata.org/entity/Q1633034',
+  },
+  {
+    id: 'abdulla-bin-zaid-al-mahmoud-islamic-cultural-center-qat',
+    name: 'Abdulla Bin Zaid Al Mahmoud Islamic Cultural Center',
+    location: 'Doha',
+    city: 'Doha',
+    category: 'Architectural',
+    description: 'Qatari mosque',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FDoha%252C%2520centro%2520islamico%2520culturale%2520Abdullah%2520Bin%2520Zaid%2520Al%2520Mahmoud%252001.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.288984, 51.535628],
+    recognizedInLanguages: 13,
+    sourceUrl: 'http://www.wikidata.org/entity/Q3057368',
+  },
+  {
+    id: 'al-khor-islands-qat',
+    name: 'Al Khor Islands',
+    location: 'Qatar',
+    city: '',
+    category: 'Historical',
+    description: 'island in Qatar',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FAlKhorIslandScenery.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.6928, 51.5489],
+    recognizedInLanguages: 12,
+    sourceUrl: 'http://www.wikidata.org/entity/Q20313129',
+  },
+  {
+    id: 'qatar-museums-qat',
+    name: 'Qatar Museums',
+    location: 'Doha',
+    city: 'Doha',
+    category: 'Cultural',
+    description: 'museum in Qatar',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FQatar%2520Museums%2520Authority.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.28863889, 51.545925],
+    recognizedInLanguages: 9,
+    sourceUrl: 'http://www.wikidata.org/entity/Q7267111',
+  },
+  {
+    id: 'amiri-diwan-of-the-state-of-qatar-qat',
+    name: 'Amiri Diwan of the State of Qatar',
+    location: 'Doha',
+    city: 'Doha',
+    category: 'Architectural',
+    description: 'building in Doha, Qatar',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/http%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FDoha%2520Palace.jpg?width=900',
+    unescoDesignated: true,
+    coordinates: [25.2908, 51.5273],
+    recognizedInLanguages: 8,
+    sourceUrl: 'http://www.wikidata.org/entity/Q19406958',
+  },
+];

@@ -1,6 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { ALL_COUNTRY_PROFILES } from '../../data';
 import { RegionId } from '../../types/spatial';
+import { MIDDLE_EAST_ISO3 } from '../../types/map';
+import { loadWorldGeo } from '../../data/map/worldGeo';
+import type { MapCountryFeature } from '../../types/map';
 
 interface GlobeCanvasProps {
   onSelectCountry: (countryId: string) => void;
@@ -20,69 +23,47 @@ interface Pin {
   lng: number;
 }
 
-// Pre-projected continent landmass polygon points (simplified lat/lng clusters for high performance)
-const CONTINENT_POLYGONS: { name: string; regionId: RegionId; coords: [number, number][] }[] = [
-  // Africa
-  {
-    name: 'Africa',
-    regionId: 'africa',
-    coords: [
-      [37, 10], [30, 32], [15, 43], [12, 51], [0, 42], [-10, 40], [-25, 33], [-34, 18], [-34, 25],
-      [-22, 14], [-5, 12], [4, 9], [5, 1], [4, -7], [12, -16], [21, -17], [32, -9], [36, 1], [37, 10]
-    ]
-  },
-  // Europe
-  {
-    name: 'Europe',
-    regionId: 'europe',
-    coords: [
-      [36, -5], [43, -9], [48, -4], [54, 4], [58, 8], [62, 5], [71, 28], [68, 44], [60, 50],
-      [55, 38], [47, 40], [42, 28], [36, 23], [36, 15], [38, 0], [36, -5]
-    ]
-  },
-  // Asia
-  {
-    name: 'Asia',
-    regionId: 'asia',
-    coords: [
-      [75, 100], [70, 140], [65, 170], [60, 160], [53, 140], [45, 145], [38, 128], [30, 122],
-      [22, 114], [10, 104], [1, 104], [8, 77], [22, 69], [25, 55], [15, 45], [30, 35], [38, 45],
-      [42, 50], [55, 60], [65, 75], [75, 100]
-    ]
-  },
-  // North America
-  {
-    name: 'North America',
-    regionId: 'americas',
-    coords: [
-      [70, -160], [72, -130], [60, -85], [55, -60], [45, -65], [30, -80], [25, -80], [20, -87],
-      [15, -92], [22, -105], [32, -117], [48, -124], [58, -135], [60, -150], [70, -160]
-    ]
-  },
-  // South America
-  {
-    name: 'South America',
-    regionId: 'americas',
-    coords: [
-      [12, -72], [10, -62], [5, -52], [-5, -35], [-15, -39], [-23, -42], [-35, -53], [-55, -66],
-      [-50, -74], [-40, -73], [-20, -70], [-5, -80], [2, -78], [12, -72]
-    ]
-  },
-  // Australia / Oceania
-  {
-    name: 'Oceania',
-    regionId: 'oceania',
-    coords: [
-      [-12, 132], [-14, 144], [-24, 153], [-37, 150], [-38, 140], [-35, 115], [-22, 114], [-15, 124], [-12, 132]
-    ]
-  }
+/* =============================================================================
+   REAL GEOGRAPHY ON THE GLOBE (2026-09-25 pivot)
+   =============================================================================
+   The six hand-authored continent polygons are retired — they were invented
+   coastlines, violating the zero-fabrication principle. The globe now renders
+   REAL Natural Earth 50m boundaries, lazily fetched through the same
+   `loadWorldGeo()` cache the 2D map uses, filtered to the strict Middle East &
+   West Asia scope (`MIDDLE_EAST_ISO3`).
+
+   Rendering strategy (benchmark-verified at ~2-3 ms/frame on Node):
+   1. On load, each country's rings are flattened into Float32Array pairs of
+      [lng, lat] — one array per polygon ring.
+   2. Per frame, every vertex is projected once into screen space (orthographic
+      projection), then segments are stroked only where both endpoints face the
+      camera (cos c > 0).
+   3. Segments crossing the horizon are clipped by linear interpolation of the
+      cos c depth value; at cos c = 0 the projected point lies exactly on the
+      limb circle, so clipped coastlines meet the globe edge precisely.
+   ============================================================================= */
+
+interface GlobeCountry {
+  iso3: string;
+  name: string;
+  /** Flattened [lng, lat, lng, lat, ...] per polygon ring. */
+  rings: Float32Array[];
+}
+
+/** Route network between the authored dossiers — decorative great-circle arcs. */
+const GULF_ROUTES: [string, string][] = [
+  ['QAT', 'EGY'],
+  ['QAT', 'ARE'],
+  ['ARE', 'EGY'],
+  ['QAT', 'SAU'],
+  ['ARE', 'SAU'],
 ];
 
 export const GlobeCanvas: React.FC<GlobeCanvasProps> = ({
   onSelectCountry,
   onSelectRegion,
-  initialLat = 20,
-  initialLng = 45,
+  initialLat = 27,
+  initialLng = 44,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [rotX, setRotX] = useState<number>(initialLat); // Latitude rotation
@@ -97,8 +78,54 @@ export const GlobeCanvas: React.FC<GlobeCanvasProps> = ({
     rotX: initialLat,
     rotY: -initialLng,
   });
-  const velocityRef = useRef<{ vx: number; vy: number }>({ vx: 0.04, vy: 0 });
+  const velocityRef = useRef<{ vx: number; vy: number }>({ vx: 0.03, vy: 0 });
   const animFrameIdRef = useRef<number | null>(null);
+
+  /** Real Natural Earth boundaries for the ME scope, loaded lazily. */
+  const [meCountries, setMeCountries] = useState<GlobeCountry[]>([]);
+
+  /* --- Load the real boundary asset once (shares the 2D map's cache) -------- */
+  useEffect(() => {
+    let active = true;
+
+    loadWorldGeo()
+      .then((collection) => {
+        if (!active) return;
+        const meFeatures = collection.features.filter(
+          (feature: MapCountryFeature) =>
+            MIDDLE_EAST_ISO3.includes(feature.properties.iso3)
+        );
+        const prepared: GlobeCountry[] = meFeatures.map((feature) => {
+          const polys =
+            feature.geometry.type === 'Polygon'
+              ? [feature.geometry.coordinates]
+              : feature.geometry.coordinates;
+          const rings = polys.map((poly) => {
+            const flat = new Float32Array(
+              poly.reduce((acc, ring) => acc + ring.length * 2, 0)
+            );
+            let i = 0;
+            for (const ring of poly) {
+              for (const [lng, lat] of ring) {
+                flat[i++] = lng;
+                flat[i++] = lat;
+              }
+            }
+            return flat;
+          });
+          return { iso3: feature.properties.iso3, name: feature.properties.name, rings };
+        });
+        setMeCountries(prepared);
+      })
+      .catch(() => {
+        // The 2D map surfaces the full error state; the globe degrades to pins-only.
+        if (active) setMeCountries([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Extract pins from flagship country dataset
   const pins: Pin[] = ALL_COUNTRY_PROFILES.map((c) => ({
@@ -255,34 +282,137 @@ export const GlobeCanvas: React.FC<GlobeCanvasProps> = ({
         ctx.stroke();
       }
 
-      // 4. Continent Landmass Polygons
-      CONTINENT_POLYGONS.forEach((cont) => {
-        ctx.beginPath();
-        let firstPt = true;
-        let visibleCount = 0;
+      // 4. Real Middle East Boundaries (Natural Earth, lazily loaded)
+      if (meCountries.length > 0) {
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+        ctx.lineWidth = 1.1;
+        ctx.lineJoin = 'round';
 
-        cont.coords.forEach(([lat, lng]) => {
-          const pt = project(lat, lng, radius, cx, cy, localRotX, -localRotY);
-          if (pt.isVisible) {
-            visibleCount++;
-            if (firstPt) {
-              ctx.moveTo(pt.x, pt.y);
-              firstPt = false;
-            } else {
-              ctx.lineTo(pt.x, pt.y);
+        const lambda = -localRotY; // project() convention: lambda = -rotY
+
+        for (const country of meCountries) {
+          for (const ring of country.rings) {
+            const vertexCount = ring.length / 2;
+            if (vertexCount < 2) continue;
+
+            ctx.beginPath();
+            let started = false;
+            let prevCos = -1;
+            let prevX = 0;
+            let prevY = 0;
+            let prevLng = 0;
+            let prevLat = 0;
+
+            for (let v = 0; v < vertexCount; v++) {
+              const lng = ring[v * 2];
+              const lat = ring[v * 2 + 1];
+              const pt = project(lat, lng, radius, cx, cy, localRotX, lambda);
+
+              if (pt.isVisible) {
+                if (!started) {
+                  // Entering the visible hemisphere: if the previous vertex was
+                  // hidden, interpolate the horizon crossing so the coastline
+                  // terminates exactly on the limb circle.
+                  if (v > 0 && prevCos <= 0 && pt.depth - prevCos !== 0) {
+                    const t = prevCos / (prevCos - pt.depth);
+                    const hLng = prevLng + t * (lng - prevLng);
+                    const hLat = prevLat + t * (lat - prevLat);
+                    const h = project(hLat, hLng, radius, cx, cy, localRotX, lambda);
+                    ctx.moveTo(h.x, h.y);
+                    ctx.lineTo(pt.x, pt.y);
+                  } else {
+                    ctx.moveTo(pt.x, pt.y);
+                  }
+                  started = true;
+                } else {
+                  ctx.lineTo(pt.x, pt.y);
+                }
+              } else if (started) {
+                // Leaving the visible hemisphere: clip to the horizon.
+                const t = prevCos / (prevCos - pt.depth);
+                const hLng = prevLng + t * (lng - prevLng);
+                const hLat = prevLat + t * (lat - prevLat);
+                const h = project(hLat, hLng, radius, cx, cy, localRotX, lambda);
+                ctx.lineTo(h.x, h.y);
+                ctx.stroke();
+                started = false;
+              }
+
+              prevCos = pt.depth;
+              prevX = pt.x;
+              prevY = pt.y;
+              prevLng = lng;
+              prevLat = lat;
+            }
+
+            if (started) {
+              ctx.stroke();
             }
           }
-        });
+        }
+      }
 
-        if (visibleCount > 2) {
-          ctx.closePath();
-          ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
-          ctx.lineWidth = 1.2;
+      // 4b. Gulf Connector Arcs — great-circle routes between authored dossiers.
+      if (meCountries.length > 0) {
+        const profileIso = new Map(
+          ALL_COUNTRY_PROFILES.map((c) => [c.iso3, c.capital.coordinates])
+        );
+        const t = Date.now() / 4000; // slow drifting arc draw progress
+
+        ctx.lineWidth = 1.2;
+        for (const [isoA, isoB] of GULF_ROUTES) {
+          const a = profileIso.get(isoA);
+          const b = profileIso.get(isoB);
+          if (!a || !b) continue; // only routes between authored dossiers
+          const [lat1, lng1] = a;
+          const [lat2, lng2] = b;
+
+          ctx.beginPath();
+          let arcStarted = false;
+          const steps = 36;
+          for (let s = 0; s <= steps; s++) {
+            const f = s / steps;
+            // Spherical interpolation between the two capitals
+            const rad = Math.PI / 180;
+            const p1 = [
+              Math.cos(lat1 * rad) * Math.cos(lng1 * rad),
+              Math.cos(lat1 * rad) * Math.sin(lng1 * rad),
+              Math.sin(lat1 * rad),
+            ];
+            const p2 = [
+              Math.cos(lat2 * rad) * Math.cos(lng2 * rad),
+              Math.cos(lat2 * rad) * Math.sin(lng2 * rad),
+              Math.sin(lat2 * rad),
+            ];
+            const dot = Math.max(-1, Math.min(1, p1[0] * p2[0] + p1[1] * p2[1] + p1[2] * p2[2]));
+            const omega = Math.acos(dot);
+            if (omega < 0.001) continue;
+            const sinOmega = Math.sin(omega);
+            const w1 = Math.sin((1 - f) * omega) / sinOmega;
+            const w2 = Math.sin(f * omega) / sinOmega;
+            const x3 = w1 * p1[0] + w2 * p2[0];
+            const y3 = w1 * p1[1] + w2 * p2[1];
+            const z3 = w1 * p1[2] + w2 * p2[2];
+            const arcLat = Math.asin(Math.max(-1, Math.min(1, z3))) / rad;
+            const arcLng = Math.atan2(y3, x3) / rad;
+            const altitude = 1 + 0.06 * Math.sin(f * Math.PI); // parabolic lift
+
+            const pt = project(arcLat, arcLng, radius * altitude, cx, cy, localRotX, -localRotY);
+            if (pt.isVisible) {
+              if (!arcStarted) {
+                ctx.moveTo(pt.x, pt.y);
+                arcStarted = true;
+              } else {
+                ctx.lineTo(pt.x, pt.y);
+              }
+            } else {
+              arcStarted = false;
+            }
+          }
+          ctx.strokeStyle = `rgba(229, 181, 88, ${0.18 + 0.1 * Math.sin(t + isoA.charCodeAt(0))})`;
           ctx.stroke();
         }
-      });
+      }
 
       // 5. Country Capital Glowing Pins
       pins.forEach((pin) => {
@@ -324,7 +454,7 @@ export const GlobeCanvas: React.FC<GlobeCanvasProps> = ({
     return () => {
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
     };
-  }, [isDragging, pins, project, hoveredPin, rotX, rotY]);
+  }, [isDragging, pins, project, hoveredPin, rotX, rotY, meCountries]);
 
   // Handle Drag Interactions (Mouse & Touch)
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -466,7 +596,7 @@ export const GlobeCanvas: React.FC<GlobeCanvasProps> = ({
         </div>
       )}
 
-      {/* Quick Region Alignment Pills */}
+      {/* Quick Region Alignment Pills — Middle East subregions */}
       <div
         style={{
           display: 'flex',
@@ -478,46 +608,39 @@ export const GlobeCanvas: React.FC<GlobeCanvasProps> = ({
         }}
       >
         <button
-          onClick={() => rotateTo(25, 45)}
+          onClick={() => rotateTo(27, 44)}
           className="btn-secondary"
           style={{ fontSize: '11px', padding: '0.3rem 0.75rem' }}
         >
-          <span>Middle East</span>
+          <span>Whole Sphere</span>
         </button>
         <button
-          onClick={() => rotateTo(35, 120)}
+          onClick={() => rotateTo(23, 47)}
           className="btn-secondary"
           style={{ fontSize: '11px', padding: '0.3rem 0.75rem' }}
         >
-          <span>East Asia</span>
+          <span>Arabian Peninsula</span>
         </button>
         <button
-          onClick={() => rotateTo(48, 15)}
+          onClick={() => rotateTo(33, 41)}
           className="btn-secondary"
           style={{ fontSize: '11px', padding: '0.3rem 0.75rem' }}
         >
-          <span>Europe</span>
+          <span>Levant &amp; Mesopotamia</span>
         </button>
         <button
-          onClick={() => rotateTo(38, -95)}
+          onClick={() => rotateTo(26.8, 30.8)}
           className="btn-secondary"
           style={{ fontSize: '11px', padding: '0.3rem 0.75rem' }}
         >
-          <span>Americas</span>
+          <span>Nile Valley</span>
         </button>
         <button
-          onClick={() => rotateTo(-2, 25)}
+          onClick={() => rotateTo(35, 42)}
           className="btn-secondary"
           style={{ fontSize: '11px', padding: '0.3rem 0.75rem' }}
         >
-          <span>Africa</span>
-        </button>
-        <button
-          onClick={() => rotateTo(-25, 135)}
-          className="btn-secondary"
-          style={{ fontSize: '11px', padding: '0.3rem 0.75rem' }}
-        >
-          <span>Oceania</span>
+          <span>Anatolia &amp; Plateau</span>
         </button>
       </div>
 

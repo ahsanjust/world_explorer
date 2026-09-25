@@ -1,0 +1,82 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Iraq — full sovereign dossier (subregion: anatolia-mesopotamia-iran).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const IRAQ: CountryProfile = buildSovereignProfile({
+    id: 'iraq',
+    iso2: 'IQ',
+    iso3: 'IRQ',
+    unCode: '368',
+    name: 'Iraq',
+    officialName: 'Republic of Iraq',
+    nativeCommon: 'العراق',
+    nativeOfficial: 'جمهورية العراق',
+    subregionId: 'anatolia-mesopotamia-iran',
+    capitalName: 'Baghdad',
+    capitalCoords: [33.3152, 44.3661],
+    majorCities: ['Baghdad', 'Basra', 'Erbil', 'Mosul', 'Sulaymaniyah', 'Najaf', 'Karbala'],
+    flagEmoji: '🇮🇶',
+    flagColors: ['#CE1126', '#FFFFFF', '#000000', '#007A3D'],
+    tagline: 'Cradle of writing, law, and urbanization along the historic Tigris and Euphrates river valleys.',
+    overview: 'Mesopotamia — the land between the Tigris and Euphrates — gave birth to Sumer, Akkad, Babylon, and Assyria, inventing cuneiform writing and agriculture. Today Iraq possesses the world’s fifth-largest petroleum reserves.',
+    areaKm2: 438317,
+    coastlineKm: 58,
+    borders: [
+      { iso3: 'IRN', name: 'Iran', lengthKm: 1458 },
+      { iso3: 'TUR', name: 'Türkiye', lengthKm: 352 },
+      { iso3: 'SYR', name: 'Syria', lengthKm: 605 },
+      { iso3: 'JOR', name: 'Jordan', lengthKm: 179 },
+      { iso3: 'SAU', name: 'Saudi Arabia', lengthKm: 814 },
+      { iso3: 'KWT', name: 'Kuwait', lengthKm: 242 },
+    ],
+    highestName: 'Cheekha Dar',
+    highestElevation: 3611,
+    lowestName: 'Persian Gulf',
+    lowestElevation: 0,
+    timezone: 'Asia/Baghdad (UTC+3)',
+    coordinates: [33.2232, 43.6793],
+    population: 44500000,
+    medianAge: 21.2,
+    urbanizationRate: 71.5,
+    lifeExpectancy: 71.5,
+    fertilityRate: 3.4,
+    gdpNominalUsdBillions: 250.0,
+    gdpPppUsdBillions: 510.0,
+    gdpPerCapitaPppUsd: 11500,
+    currencyCode: 'IQD',
+    currencyName: 'Iraqi Dinar',
+    currencySymbol: 'ع.د',
+    isPegged: false,
+    fallbackRate: 1310.0,
+    literacyRate: 85.6,
+    tertiaryEnrollment: 18.0,
+    safetyIndex: 47.8,
+    crimeIndex: 52.2,
+    peaceIndexRank: 151,
+    peaceIndexScore: 3.01,
+    koppenCode: 'BWh',
+    koppenTitle: 'Arid Desert to Zagros Mountains',
+    climateSummary: 'Subtropical continental climate with very hot dry summers and mild winters; northern mountains receive heavy snow.',
+    avgTemp: 23.0,
+    avgRainfall: 150,
+    unescoCount: 6,
+    landmarks: [
+      { name: 'Babylon Archaeological City', location: 'Hillah', description: 'Ancient Mesopotamian imperial capital featuring the Ishtar Gate and Processional Way.', imageUrl: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=800&auto=format&fit=crop' },
+      { name: 'The Ahwar (Mesopotamian Marshes)', location: 'Southern Iraq', description: 'Refuge of biodiversity and cradle of Marsh Arab marshland reed architecture.', imageUrl: 'https://images.unsplash.com/photo-1547234935-80c7145ec969?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Masgouf', description: 'National dish: butterflied carp roasted over fruitwood flames with sumac and pomegranate molasses.' },
+      { name: 'Dolma', description: 'Grape leaves, onions, and zucchini stuffed with spiced minced lamb and rice.' },
+    ],
+    languages: [
+      { name: 'Arabic', isOfficial: true },
+      { name: 'Kurdish', isOfficial: true },
+    ],
+    mainIndustries: ['Oil & Gas', 'Petrochemicals', 'Construction & Cement', 'Agriculture (dates & grains)', 'Refining'],
+    topExports: ['Crude oil', 'Petroleum products', 'Natural gas', 'Dates & agricultural produce'],
+});

@@ -3,19 +3,38 @@ import { CurrencySpec } from './currency';
 
 export interface University {
   name: string;
-  globalRankQs: number;
+  /**
+   * QS World University Ranking, or `null` when no licensed ranking exists for
+   * the institution. Generated records are never assigned a rank — see the
+   * ranking note in `src/types/university.ts` — so consumers render the absence
+   * instead of a number no source published.
+   */
+  globalRankQs: number | null;
   city: string;
   notableFields: string[];
   websiteUrl?: string;
 }
 
 export interface Landmark {
+  /** Slug, unique across the landmark dataset. Absent on hand-authored dossier entries. */
+  id?: string;
   name: string;
   location: string;
   category: 'Natural' | 'Historical' | 'Architectural' | 'Cultural';
   description: string;
   imageUrl: string;
   unescoDesignated?: boolean;
+  /** City/town, when the record comes from the generated dataset. */
+  city?: string;
+  /** `[lat, lng]`, when recorded upstream. */
+  coordinates?: [number, number] | null;
+  /**
+   * Number of Wikipedia language editions with an article about the place — the
+   * recognition signal the generated dataset is ordered by. Not a rating.
+   */
+  recognizedInLanguages?: number;
+  /** Wikidata entity URL: the provenance for every generated field. */
+  sourceUrl?: string;
 }
 
 export interface ClimographPoint {

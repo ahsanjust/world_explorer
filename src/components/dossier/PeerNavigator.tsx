@@ -40,7 +40,16 @@ export const PeerNavigator: React.FC<PeerNavigatorProps> = ({ country, onSelectC
                 return (
                   <div
                     key={id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open ${peer.name} country profile`}
                     onClick={() => onSelectCountry(peer.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectCountry(peer.id);
+                      }
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -92,7 +101,16 @@ export const PeerNavigator: React.FC<PeerNavigatorProps> = ({ country, onSelectC
                 return (
                   <div
                     key={id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open ${peer.name} country profile`}
                     onClick={() => onSelectCountry(peer.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectCountry(peer.id);
+                      }
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -142,7 +160,16 @@ export const PeerNavigator: React.FC<PeerNavigatorProps> = ({ country, onSelectC
                 return (
                   <div
                     key={id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open ${peer.name} country profile`}
                     onClick={() => onSelectCountry(peer.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectCountry(peer.id);
+                      }
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',

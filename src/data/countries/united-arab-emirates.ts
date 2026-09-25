@@ -10,8 +10,8 @@ export const UAE: CountryProfile = {
   nativeNames: [
     { languageCode: 'ara', common: 'الإمارات', official: 'الإمارات العربية المتحدة' },
   ],
-  regionId: 'asia',
-  subregionId: 'middle-east',
+  regionId: 'middle-east',
+  subregionId: 'arabian-peninsula',
   capital: {
     name: 'Abu Dhabi',
     coordinates: [24.4539, 54.3773],
@@ -237,7 +237,8 @@ export const UAE: CountryProfile = {
   },
 
   analyticalPeers: {
-    economicTwins: ['qatar', 'singapore', 'norway'],
+    // Strict ME scope: peers must reference authored in-app dossiers only.
+    economicTwins: ['qatar'],
     climaticTwins: ['qatar', 'egypt'],
     regionalNeighbors: ['qatar'],
   },

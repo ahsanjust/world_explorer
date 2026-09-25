@@ -1,0 +1,80 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Armenia — full sovereign dossier (subregion: caucasus-afghanistan).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const ARMENIA: CountryProfile = buildSovereignProfile({
+    id: 'armenia',
+    iso2: 'AM',
+    iso3: 'ARM',
+    unCode: '051',
+    name: 'Armenia',
+    officialName: 'Republic of Armenia',
+    nativeCommon: 'Հայաստան',
+    nativeOfficial: 'Հայաստանի Հանրապետություն',
+    subregionId: 'caucasus-afghanistan',
+    capitalName: 'Yerevan',
+    capitalCoords: [40.1792, 44.4991],
+    majorCities: ['Yerevan', 'Gyumri', 'Vanadzor', 'Vagharshapat', 'Hrazdan', 'Abovyan', 'Kapan'],
+    flagEmoji: '🇦🇲',
+    flagColors: ['#D90012', '#0033A0', '#F2A800'],
+    tagline: 'First nation to adopt Christianity in 301 AD, surrounded by dramatic Lesser Caucasus peaks and Lake Sevan.',
+    overview: 'Nestled in the South Caucasus mountains, Armenia is one of the world’s oldest continuously inhabited cultural regions, known for early medieval stone monasteries, Mount Ararat views, and high-altitude Lake Sevan.',
+    areaKm2: 29743,
+    coastlineKm: 0,
+    borders: [
+      { iso3: 'GEO', name: 'Georgia', lengthKm: 219 },
+      { iso3: 'AZE', name: 'Azerbaijan', lengthKm: 787 },
+      { iso3: 'TUR', name: 'Türkiye', lengthKm: 311 },
+      { iso3: 'IRN', name: 'Iran', lengthKm: 44 },
+    ],
+    highestName: 'Mount Aragats',
+    highestElevation: 4090,
+    lowestName: 'Debed River',
+    lowestElevation: 400,
+    timezone: 'Asia/Yerevan (UTC+4)',
+    coordinates: [40.0691, 45.0382],
+    population: 2970000,
+    medianAge: 36.6,
+    urbanizationRate: 63.4,
+    lifeExpectancy: 75.1,
+    fertilityRate: 1.6,
+    gdpNominalUsdBillions: 24.0,
+    gdpPppUsdBillions: 54.0,
+    gdpPerCapitaPppUsd: 19800,
+    currencyCode: 'AMD',
+    currencyName: 'Armenian Dram',
+    currencySymbol: '֏',
+    isPegged: false,
+    fallbackRate: 388.0,
+    literacyRate: 99.7,
+    tertiaryEnrollment: 54.0,
+    safetyIndex: 78.0,
+    crimeIndex: 22.0,
+    peaceIndexRank: 66,
+    peaceIndexScore: 1.94,
+    koppenCode: 'Dfb',
+    koppenTitle: 'Highland Continental to Alpine',
+    climateSummary: 'Dry highland continental climate with hot summers and freezing, snowy winters.',
+    avgTemp: 11.5,
+    avgRainfall: 560,
+    unescoCount: 3,
+    landmarks: [
+      { name: 'Geghard Monastery & Upper Azat Valley', location: 'Kotayk Province', description: 'Medieval rock-cut monastery complex carved directly into the cliff-faces of the Azat gorge.', imageUrl: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&auto=format&fit=crop' },
+      { name: 'Khor Virap Monastery', location: 'Ararat Province', description: 'Iconic pilgrimage monastery framing breathtaking views of snow-capped Mount Ararat.', imageUrl: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Khorovats', description: 'Armenian marinated barbecue pork, lamb, or beef grilled on skewers over open embers.' },
+      { name: 'Lavash', description: 'UNESCO-inscribed traditional thin flatbread baked by slapping dough against tondir clay oven walls.' },
+    ],
+    languages: [
+      { name: 'Armenian', isOfficial: true },
+      { name: 'Russian', isOfficial: false },
+    ],
+    mainIndustries: ['Mining & Metallurgy', 'Jewellery & Diamond Cutting', 'Agri-food & Brandy', 'IT & Software', 'Hydroelectric Power'],
+    topExports: ['Copper & molybdenum concentrates', 'Gold', 'Brandy & alcoholic beverages', 'Diamonds', 'Processed food'],
+});

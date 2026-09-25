@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Globe, Compass } from 'lucide-react';
+import {ChevronRight, Globe} from 'lucide-react';
 import { Region, Subregion } from '../../types/spatial';
 import { CountryProfile } from '../../types/country';
 

@@ -1,34 +1,42 @@
-import React from 'react';
-import {
-  TrendingUp,
-  DollarSign,
-  Users,
-  Shield,
-  Sun,
-  GraduationCap,
-  Landmark,
-  FileText,
-  Layers,
-} from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { SECTIONS } from './sections';
 
 interface StickyNavRailProps {
   activeSection: string;
   onSelectSection: (sectionId: string) => void;
 }
 
-export const SECTIONS = [
-  { id: 'overview', label: 'Overview', icon: FileText },
-  { id: 'economy', label: 'Economy & Wealth', icon: TrendingUp },
-  { id: 'currency', label: 'Live Currency', icon: DollarSign },
-  { id: 'demographics', label: 'Demographics', icon: Users },
-  { id: 'cost-of-living', label: 'Cost of Living', icon: Layers },
-  { id: 'safety', label: 'Safety & Peace', icon: Shield },
-  { id: 'climate', label: 'Climate & Biome', icon: Sun },
-  { id: 'education', label: 'Universities', icon: GraduationCap },
-  { id: 'culture', label: 'Culture & Luxury', icon: Landmark },
-];
-
 export const StickyNavRail: React.FC<StickyNavRailProps> = ({ activeSection, onSelectSection }) => {
+  const progressRef = useRef<HTMLDivElement | null>(null);
+
+  /* Reading-progress line. rAF-throttled and written straight to the element as
+     a CSS custom property — a React state update here would re-render the whole
+     dossier tree on every scroll frame. */
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const el = progressRef.current;
+      if (!el) return;
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - doc.clientHeight;
+      // No scrollable overflow (short page): everything is already in view.
+      const ratio = scrollable <= 0 ? 1 : Math.min(1, Math.max(0, doc.scrollTop / scrollable));
+      el.style.setProperty('--progress', `${(ratio * 100).toFixed(2)}%`);
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update(); // paint correct value on mount (mid-page re-entry, hash routes)
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   return (
     <nav
       style={{
@@ -38,10 +46,12 @@ export const StickyNavRail: React.FC<StickyNavRailProps> = ({ activeSection, onS
         background: 'rgba(10, 14, 22, 0.92)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--border-subtle)',
-        overflowX: 'auto',
-        whiteSpace: 'nowrap',
+        /* The nav itself never scrolls: the progress line is absolutely pinned to
+           it, and only the button strip below scrolls horizontally (it would
+           otherwise drag the line out of view on narrow screens). */
       }}
     >
+      <div ref={progressRef} className="rail-progress" aria-hidden="true" />
       <div
         className="container"
         style={{
@@ -49,6 +59,8 @@ export const StickyNavRail: React.FC<StickyNavRailProps> = ({ activeSection, onS
           gap: '0.25rem',
           paddingTop: '0.35rem',
           paddingBottom: '0.35rem',
+          overflowX: 'auto',
+          whiteSpace: 'nowrap',
         }}
       >
         {SECTIONS.map((sec) => {
@@ -58,6 +70,7 @@ export const StickyNavRail: React.FC<StickyNavRailProps> = ({ activeSection, onS
             <button
               key={sec.id}
               onClick={() => onSelectSection(sec.id)}
+              aria-current={isActive ? 'location' : undefined}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

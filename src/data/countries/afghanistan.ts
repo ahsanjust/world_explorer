@@ -1,0 +1,82 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Afghanistan — full sovereign dossier (subregion: caucasus-afghanistan).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const AFGHANISTAN: CountryProfile = buildSovereignProfile({
+    id: 'afghanistan',
+    iso2: 'AF',
+    iso3: 'AFG',
+    unCode: '004',
+    name: 'Afghanistan',
+    officialName: 'Islamic Emirate of Afghanistan',
+    nativeCommon: 'افغانستان',
+    nativeOfficial: 'د افغانستان اسلامي امارت',
+    subregionId: 'caucasus-afghanistan',
+    capitalName: 'Kabul',
+    capitalCoords: [34.5553, 69.2075],
+    majorCities: ['Kabul', 'Kandahar', 'Herat', 'Mazar-i-Sharif', 'Jalalabad', 'Kunduz', 'Ghazni'],
+    flagEmoji: '🇦🇫',
+    flagColors: ['#000000', '#D32011', '#007A36'],
+    tagline: 'Historic heart of the ancient Silk Road, flanked by the towering Hindu Kush and turquoise lakes of Band-e Amir.',
+    overview: 'At the continental intersection of Central, South, and Western Asia, Afghanistan features the formidable peaks of the Hindu Kush mountains, ancient lapis lazuli mines, and the Great Mosque of Herat.',
+    areaKm2: 652864,
+    coastlineKm: 0,
+    borders: [
+      { iso3: 'IRN', name: 'Iran', lengthKm: 921 },
+      { iso3: 'PAK', name: 'Pakistan', lengthKm: 2670 },
+      { iso3: 'TKM', name: 'Turkmenistan', lengthKm: 804 },
+      { iso3: 'UZB', name: 'Uzbekistan', lengthKm: 144 },
+      { iso3: 'TJK', name: 'Tajikistan', lengthKm: 1357 },
+      { iso3: 'CHN', name: 'China', lengthKm: 91 },
+    ],
+    highestName: 'Noshaq',
+    highestElevation: 7492,
+    lowestName: 'Amu Darya',
+    lowestElevation: 258,
+    timezone: 'Asia/Kabul (UTC+4:30)',
+    coordinates: [33.9391, 67.7100],
+    population: 42200000,
+    medianAge: 18.5,
+    urbanizationRate: 26.3,
+    lifeExpectancy: 63.2,
+    fertilityRate: 4.5,
+    gdpNominalUsdBillions: 14.5,
+    gdpPppUsdBillions: 67.0,
+    gdpPerCapitaPppUsd: 1650,
+    currencyCode: 'AFN',
+    currencyName: 'Afghan Afghani',
+    currencySymbol: '؋',
+    isPegged: false,
+    fallbackRate: 70.5,
+    literacyRate: 37.3,
+    tertiaryEnrollment: 10.0,
+    safetyIndex: 24.0,
+    crimeIndex: 76.0,
+    peaceIndexRank: 160,
+    peaceIndexScore: 3.41,
+    koppenCode: 'BSk',
+    koppenTitle: 'Arid to Semiarid Cold Continental',
+    climateSummary: 'Cold winters with heavy mountain snows; dry and scorching hot summers.',
+    avgTemp: 12.8,
+    avgRainfall: 320,
+    unescoCount: 2,
+    landmarks: [
+      { name: 'Band-e Amir National Park', location: 'Bamyan Province', description: 'Chain of six intensely deep turquoise natural travertine dam lakes in the Hindu Kush.', imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop' },
+      { name: 'Great Mosque of Herat', location: 'Herat', description: 'Exquisite 12th-century Ghurid and Timurid blue mosaic tiled congregational mosque.', imageUrl: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Kabuli Pulao', description: 'Steamed rice cooked in savory meat broth, topped with caramelized carrots, raisins, and tender lamb.' },
+      { name: 'Mantu', description: 'Steamed spiced beef or lamb dumplings dressed with garlicky yogurt (chaka) and split pea sauce.' },
+    ],
+    languages: [
+      { name: 'Dari (Persian)', isOfficial: true },
+      { name: 'Pashto', isOfficial: true },
+    ],
+    mainIndustries: ['Agriculture (wheat, pomegranates & saffron)', 'Handmade Carpets', 'Textiles', 'Mining & Minerals', 'Cross-border Trade'],
+    topExports: ['Hand-woven carpets', 'Saffron', 'Pomegranates & dried fruit', 'Cotton', 'Talc & minerals'],
+});

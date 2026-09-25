@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { ZoomIn, ZoomOut, RotateCcw, ArrowRight } from 'lucide-react';
-import { COUNTRY_INDEX, getRegionById } from '../../data';
+import { COUNTRY_INDEX, getRegionById, getSubregionsByRegion } from '../../data';
 import { RegionId } from '../../types/spatial';
 import { loadWorldGeo } from '../../data/map/worldGeo';
 import {
@@ -11,7 +11,7 @@ import {
   MAP_ASPECT,
 } from '../../data/map/projection';
 import {
-  CONTINENTS_BY_REGION,
+  MIDDLE_EAST_ISO3,
   EXCLUDED_CONTINENTS,
   RenderableCountry,
   WorldGeoStatus,
@@ -40,36 +40,35 @@ interface WorldMap2DProps {
   selectedRegionId?: RegionId;
 }
 
-/** Continent label → the app's RegionId, for territories with no dossier. */
-const REGION_FOR_CONTINENT: Record<string, RegionId> = {
-  Africa: 'africa',
-  Asia: 'asia',
-  Europe: 'europe',
-  'North America': 'americas',
-  'South America': 'americas',
-  Oceania: 'oceania',
+/* --- Middle East scope constants (2026-09-25 pivot) ------------------------ */
+
+/** Sphere accent (single region: Middle East & West Asia). */
+const REGION_ACCENT = '#E5B558'; // Gold
+
+/** Per-subregion accents for pills, lens highlighting, and HUD accents. */
+const SUBREGION_ACCENTS: Record<string, string> = {
+  'arabian-peninsula': '#E5B558', // Gold
+  'levant': '#38BDF8', // Cyan
+  'anatolia-mesopotamia-iran': '#F472B6', // Rose
+  'north-africa': '#34D399', // Emerald
+  'caucasus-afghanistan': '#A78BFA', // Violet
 };
 
-const REGION_ACCENT_COLORS: Record<RegionId, string> = {
-  asia: '#E5B558', // Gold
-  europe: '#38BDF8', // Cyan
-  americas: '#34D399', // Emerald
-  africa: '#FB7185', // Rose
-  oceania: '#A78BFA', // Violet
-  // `RegionId` carries a reserved 'polar' member that no Region declares yet.
-  // Record<RegionId, ...> therefore has to cover it; see WORK_QUEUE TASK-007.
-  polar: '#7DD3FC',
+/** Zoom target per subregion when framing in place. */
+const SUBREGION_ZOOM: Record<string, number> = {
+  'arabian-peninsula': 2.4,
+  'levant': 3.2,
+  'anatolia-mesopotamia-iran': 2.2,
+  'north-africa': 1.8,
+  'caucasus-afghanistan': 2.6,
 };
 
-/** Zoom target per region when the caller does not navigate away. */
-const REGION_ZOOM: Record<RegionId, number> = {
-  asia: 1.9,
-  europe: 2.4,
-  americas: 1.7,
-  africa: 1.9,
-  oceania: 2.1,
-  polar: 1,
-};
+const ME_SUBREGIONS = getSubregionsByRegion('middle-east');
+
+/** iso3 → subregion id for every in-scope territory (accents + lens filter). */
+const SUBREGION_FOR_ISO3: Record<string, string> = Object.fromEntries(
+  ME_SUBREGIONS.flatMap((sub) => sub.countries.map((iso3) => [iso3, sub.id]))
+);
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 8;
@@ -77,14 +76,18 @@ const MAX_ZOOM = 8;
 /** Base label size in user units, divided by zoom so on-screen size is stable. */
 const LABEL_UNIT = 3.4;
 
-const GRATICULE_PARALLELS = [-60, -30, 0, 30, 60].map((lat) => ({
+/** Tropic of Cancer crosses the sphere — rendered gold like the old equator. */
+const TROPIC_LAT = 23.4367;
+
+const GRATICULE_PARALLELS = [15, TROPIC_LAT, 30, 45].map((lat) => ({
   lat,
   y: project(0, lat)[1],
 }));
 
-const GRATICULE_MERIDIANS = Array.from({ length: 11 }, (_, i) => -150 + i * 30).map(
-  (lon) => ({ lon, x: project(lon, 0)[0] })
-);
+const GRATICULE_MERIDIANS = [30, 40, 50, 60].map((lon) => ({
+  lon,
+  x: project(lon, 0)[0],
+}));
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -110,7 +113,8 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
 
   /* --- Interaction State --------------------------------------------------- */
   const [hoveredIso, setHoveredIso] = useState<string | null>(null);
-  const [activeFilterRegion, setActiveFilterRegion] = useState<RegionId | 'all'>('all');
+  /** 'all' or a subregion id of the single Middle East sphere. */
+  const [activeFilterRegion, setActiveFilterRegion] = useState<string>('all');
   const [notice, setNotice] = useState<string | null>(null);
   /** True once the browser reports a reduced-motion preference. */
   const [reducedMotion, setReducedMotion] = useState<boolean>(false);
@@ -128,7 +132,9 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
         setCountries(
           computeRenderableCountries(
             collection.features.filter(
-              (feature) => !EXCLUDED_CONTINENTS.includes(feature.properties.continent)
+              (feature) =>
+                !EXCLUDED_CONTINENTS.includes(feature.properties.continent) &&
+                MIDDLE_EAST_ISO3.includes(feature.properties.iso3)
             )
           )
         );
@@ -179,7 +185,6 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
   );
 
   const hoveredSummary = hoveredIso ? dossierByIso.get(hoveredIso) : undefined;
-
   /** Display name for whatever is under the cursor, dossier or not. */
   const hoveredName = hoveredSummary
     ? hoveredSummary.name
@@ -187,23 +192,30 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
       ? (countries.find((c) => c.iso3 === hoveredIso)?.name ?? hoveredIso)
       : '';
 
-  const hoveredRegionId: RegionId | undefined = hoveredSummary
-    ? hoveredSummary.regionId
-    : (() => {
-        const continent = countries.find((c) => c.iso3 === hoveredIso)?.continent;
-        return continent ? REGION_FOR_CONTINENT[continent] : undefined;
-      })();
+  /** Subregion id of whatever is under the cursor (dossier or raw territory). */
+  const hoveredSubregionId: string | undefined = hoveredSummary
+    ? hoveredSummary.subregionId
+    : hoveredIso
+      ? SUBREGION_FOR_ISO3[hoveredIso]
+      : undefined;
 
-  /** Territories in the active region lens, or null when no lens is active. */
+  /** Accent colour for HUD borders/badges (subregion accent, sphere fallback). */
+  const hoveredAccent = hoveredSubregionId
+    ? SUBREGION_ACCENTS[hoveredSubregionId] ?? REGION_ACCENT
+    : REGION_ACCENT;
+
+  /** Human label for the HUD badge (never a raw id). */
+  const hoveredBadgeLabel = hoveredSubregionId
+    ? ME_SUBREGIONS.find((s) => s.id === hoveredSubregionId)?.name ?? hoveredSubregionId
+    : 'Middle East & West Asia';
+
+  /** Territories in the active subregion lens, or null when no lens is active. */
   const highlightIsos = useMemo<Set<string> | null>(() => {
     if (activeFilterRegion === 'all') return null;
-    const continents = CONTINENTS_BY_REGION[activeFilterRegion];
-    return new Set(
-      countries
-        .filter((country) => continents.includes(country.continent))
-        .map((country) => country.iso3)
-    );
-  }, [activeFilterRegion, countries]);
+    const sub = ME_SUBREGIONS.find((s) => s.id === activeFilterRegion);
+    if (!sub) return null;
+    return new Set(sub.countries);
+  }, [activeFilterRegion]);
 
   /* --- Rendered geometry (for pan clamping + region framing) --------------- */
   const rendered = useMemo(() => {
@@ -234,15 +246,42 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
     setPan((current) => clampPan(current, zoom));
   }, [zoom, clampPan]);
 
-  /** Frames a region without navigating (used when no navigation callback). */
-  const frameRegion = useCallback(
-    (regionId: RegionId) => {
-      const region = getRegionById(regionId);
-      if (!region || !rendered.w || !rendered.h) return;
+  /** Frames the whole sphere, a subregion, or falls back to the region focal. */
+  const frameView = useCallback(
+    (viewId: string) => {
+      if (!rendered.w || !rendered.h) return;
+
+      if (viewId === 'all') {
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+        return;
+      }
+
+      const sub = ME_SUBREGIONS.find((s) => s.id === viewId);
+      if (sub) {
+        const [lat, lng] = sub.centerCoordinates;
+        const [x, y] = project(lng, lat);
+        const nextZoom = clamp(SUBREGION_ZOOM[sub.id] ?? 2.6, MIN_ZOOM, MAX_ZOOM);
+
+        setZoom(nextZoom);
+        setPan(
+          clampPan(
+            {
+              x: -(x / MAP_WIDTH - 0.5) * rendered.w * nextZoom,
+              y: -(y / MAP_HEIGHT - 0.5) * rendered.h * nextZoom,
+            },
+            nextZoom
+          )
+        );
+        return;
+      }
+
+      const region = getRegionById(viewId as RegionId);
+      if (!region) return;
 
       const [lat, lng] = region.focalCoordinates;
       const [x, y] = project(lng, lat);
-      const nextZoom = clamp(REGION_ZOOM[regionId] ?? 1.8, MIN_ZOOM, MAX_ZOOM);
+      const nextZoom = clamp(region.focalZoom, MIN_ZOOM, MAX_ZOOM);
 
       setZoom(nextZoom);
       setPan(
@@ -261,9 +300,9 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
   /* --- External region sync ------------------------------------------------ */
   useEffect(() => {
     if (!selectedRegionId) return;
-    setActiveFilterRegion(selectedRegionId);
-    frameRegion(selectedRegionId);
-  }, [selectedRegionId, frameRegion]);
+    setActiveFilterRegion('all');
+    frameView(selectedRegionId);
+  }, [selectedRegionId, frameView]);
 
   /* --- Zoom handlers ------------------------------------------------------- */
   const handleZoomIn = () => setZoom((prev) => Math.min(prev * 1.5, MAX_ZOOM));
@@ -275,23 +314,24 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
     setNotice(null);
   };
 
-  /* --- Region filter switch ------------------------------------------------ */
-  const handleFilterRegion = (regId: RegionId | 'all') => {
-    setActiveFilterRegion(regId);
+  /* --- Lens (subregion) filter switch -------------------------------------- */
+  const handleFilterRegion = (viewId: string) => {
     setNotice(null);
 
-    if (regId === 'all') {
+    if (viewId === 'all') {
       handleReset();
       return;
     }
 
-    // Prefer navigation when the parent can route us there; the component
-    // unmounts on navigation, so framing is only the fallback path.
-    if (onSelectRegion) {
-      onSelectRegion(regId);
-    } else {
-      frameRegion(regId);
+    // The sphere-level id still routes to the region portal page; subregion
+    // pills frame in place so exploration stays inside the map.
+    if (viewId === 'middle-east' && onSelectRegion) {
+      onSelectRegion(viewId);
+      return;
     }
+
+    setActiveFilterRegion(viewId);
+    frameView(viewId);
   };
 
   /* --- Pointer handlers ---------------------------------------------------- */
@@ -345,15 +385,15 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
     [dossierByIso, onSelectCountry]
   );
 
-  /* --- Region pill counts ---------------------------------------------------
+  /* --- Subregion pill counts -------------------------------------------------
    * Counted from the DOSSIER set, not from boundary geometry. These pills read as
-   * a coverage legend ("which spheres can I explore?"), so they must sum to the
-   * "All Spheres" total. Counting territories by continent instead would report
-   * ~48 for Asia and conflate "has boundaries" with "has a dossier". */
-  const regionPillCounts = useMemo(() => {
+   * a coverage legend ("which subregions can I explore?"), so their dossier counts
+   * must sum to the "All Nations" total. Counting territories by subregion instead
+   * would conflate "has boundaries" with "has a dossier". */
+  const subregionPillCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    for (const country of COUNTRY_INDEX) {
-      counts[country.regionId] = (counts[country.regionId] ?? 0) + 1;
+    for (const sub of ME_SUBREGIONS) {
+      counts[sub.id] = COUNTRY_INDEX.filter((c) => sub.countries.includes(c.iso3)).length;
     }
     return counts;
   }, []);
@@ -423,34 +463,33 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
               transition: 'all var(--transition-fast)',
             }}
           >
-            All Spheres ({COUNTRY_INDEX.length})
+            All Nations ({COUNTRY_INDEX.length})
           </button>
-          {(['asia', 'europe', 'americas', 'africa', 'oceania'] as RegionId[]).map(
-            (rId) => {
-              const count = regionPillCounts[rId] ?? 0;
-              const isSelected = activeFilterRegion === rId;
-              return (
-                <button
-                  key={rId}
-                  onClick={() => handleFilterRegion(rId)}
-                  style={{
-                    background: isSelected ? REGION_ACCENT_COLORS[rId] : 'transparent',
-                    color: isSelected ? '#07090E' : 'var(--text-secondary)',
-                    border: 'none',
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    textTransform: 'capitalize',
-                    transition: 'all var(--transition-fast)',
-                  }}
-                >
-                  {rId} ({count})
-                </button>
-              );
-            }
-          )}
+          {ME_SUBREGIONS.map((sub) => {
+            const count = subregionPillCounts[sub.id] ?? 0;
+            const isSelected = activeFilterRegion === sub.id;
+            const accentColor = SUBREGION_ACCENTS[sub.id] ?? REGION_ACCENT;
+            return (
+              <button
+                key={sub.id}
+                onClick={() => handleFilterRegion(sub.id)}
+                style={{
+                  background: isSelected ? accentColor : 'transparent',
+                  color: isSelected ? '#07090E' : 'var(--text-secondary)',
+                  border: 'none',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all var(--transition-fast)',
+                }}
+              >
+                {sub.name} ({count})
+              </button>
+            );
+          })}
         </div>
 
         {/* Zoom & Reset Controls */}
@@ -597,9 +636,11 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
                 x2={MAP_WIDTH}
                 y2={y}
                 stroke={
-                  lat === 0 ? 'rgba(229, 181, 88, 0.2)' : 'rgba(255, 255, 255, 0.06)'
+                  lat === TROPIC_LAT
+                    ? 'rgba(229, 181, 88, 0.2)'
+                    : 'rgba(255, 255, 255, 0.06)'
                 }
-                strokeDasharray={lat === 0 ? 'none' : '3,3'}
+                strokeDasharray={lat === TROPIC_LAT ? 'none' : '3,3'}
                 vectorEffect="non-scaling-stroke"
               />
             ))}
@@ -610,10 +651,8 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
                 y1={0}
                 x2={x}
                 y2={MAP_HEIGHT}
-                stroke={
-                  lon === 0 ? 'rgba(56, 189, 248, 0.18)' : 'rgba(255, 255, 255, 0.06)'
-                }
-                strokeDasharray={lon === 0 ? 'none' : '3,3'}
+                stroke="rgba(255, 255, 255, 0.06)"
+                strokeDasharray="3,3"
                 vectorEffect="non-scaling-stroke"
               />
             ))}
@@ -625,9 +664,6 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
               const hasDossier = dossierByIso.has(country.iso3);
               const inLens = highlightIsos ? highlightIsos.has(country.iso3) : true;
               const isHovered = hoveredIso === country.iso3;
-              const regionId =
-                REGION_FOR_CONTINENT[country.continent] ?? ('asia' as RegionId);
-              const accent = REGION_ACCENT_COLORS[regionId];
 
               const fill = !inLens
                 ? 'rgba(148, 163, 184, 0.06)'
@@ -729,7 +765,7 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
                   cy={y}
                   r={2.4 / zoom}
                   fill="none"
-                  stroke={REGION_ACCENT_COLORS[hoveredSummary.regionId]}
+                  stroke={hoveredAccent}
                   strokeWidth={1.4}
                   vectorEffect="non-scaling-stroke"
                   filter="url(#nodeGlow)"
@@ -811,8 +847,7 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
                 lineHeight: 1.55,
               }}
             >
-              {errorMessage} The continental spheres below and the 3D globe view still
-              work.
+              {errorMessage} The 3D globe view still works.
             </p>
           </div>
         )}
@@ -829,11 +864,7 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
             background: 'rgba(7, 9, 14, 0.92)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            border: `1px solid ${
-              hoveredRegionId
-                ? REGION_ACCENT_COLORS[hoveredRegionId]
-                : 'var(--border-medium)'
-            }`,
+            border: `1px solid ${hoveredAccent}`,
             borderRadius: 'var(--radius-md)',
             padding: '1rem 1.25rem',
             minWidth: '280px',
@@ -872,7 +903,7 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
                 </div>
               </div>
             </div>
-            {hoveredRegionId && (
+            {hoveredSummary && (
               <span
                 style={{
                   fontSize: '10px',
@@ -880,13 +911,13 @@ export const WorldMap2D: React.FC<WorldMap2DProps> = ({
                   textTransform: 'uppercase',
                   padding: '2px 7px',
                   borderRadius: '999px',
-                  background: `${REGION_ACCENT_COLORS[hoveredRegionId]}20`,
-                  color: REGION_ACCENT_COLORS[hoveredRegionId],
-                  border: `1px solid ${REGION_ACCENT_COLORS[hoveredRegionId]}50`,
+                  background: `${hoveredAccent}20`,
+                  color: hoveredAccent,
+                  border: `1px solid ${hoveredAccent}50`,
                   whiteSpace: 'nowrap',
                 }}
               >
-                {hoveredRegionId}
+                {hoveredBadgeLabel}
               </span>
             )}
           </div>

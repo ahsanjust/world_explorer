@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Globe, Map as MapIcon, ArrowRight, Sparkles, Compass, Filter } from 'lucide-react';
 import { GlobeCanvas } from '../globe/GlobeCanvas';
 import { WorldMap2D } from './WorldMap2D';
-import { getAllRegions, getSubregionsByRegion, getThematicPortals } from '../../data';
+import { getAllRegions, getAllSubregions, getCountriesBySubregion, getThematicPortals } from '../../data';
 import { RegionId } from '../../types/spatial';
 
 interface WorldPortalProps {
   onSelectRegion: (regionId: RegionId) => void;
+  onSelectSubregion?: (subregionId: string) => void;
   onSelectCountry: (countryId: string) => void;
   onOpenThematic: (portalId?: string) => void;
   onOpenFilter?: () => void;
@@ -14,11 +15,13 @@ interface WorldPortalProps {
 
 export const WorldPortal: React.FC<WorldPortalProps> = ({
   onSelectRegion,
+  onSelectSubregion,
   onSelectCountry,
   onOpenThematic,
   onOpenFilter,
 }) => {
   const regions = getAllRegions();
+  const subregions = getAllSubregions();
   const thematicPortals = getThematicPortals();
   const [mapMode, setMapMode] = useState<'2d' | '3d'>('2d');
 
@@ -57,7 +60,7 @@ export const WorldPortal: React.FC<WorldPortalProps> = ({
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Explore the World Through Context &amp; Intelligence
+            Explore the Middle East Through Context &amp; Intelligence
           </h1>
 
           <p
@@ -69,7 +72,7 @@ export const WorldPortal: React.FC<WorldPortalProps> = ({
               lineHeight: 1.6,
             }}
           >
-            A high-resolution planetary instrument connecting geographic spatial descent with verified economics, daily central bank exchange rates, demographics, and comparative benchmarks.
+            A high-resolution regional instrument connecting geographic spatial descent with verified economics, daily central bank exchange rates, demographics, and comparative benchmarks across the Middle East & West Asia.
           </p>
 
           {/* Cartographic View Mode & Action Selector */}
@@ -221,101 +224,137 @@ export const WorldPortal: React.FC<WorldPortalProps> = ({
         </div>
       </section>
 
-      {/* Continental Macro Spheres Grid */}
+      {/* 5 Geo-Strategic Subregions Grid */}
       <section style={{ padding: '3rem 0' }}>
         <div className="container">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
-            <Compass size={22} color="var(--accent-gold)" />
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', fontWeight: 800 }}>
-              The 5 Continental Spheres
-            </h3>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <Compass size={22} color="var(--accent-gold)" />
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', fontWeight: 800 }}>
+                The 5 Geo-Strategic Subregions
+              </h3>
+            </div>
+            <span className="badge badge-gold">26 Sovereign Nations</span>
           </div>
           <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginBottom: '1.75rem' }}>
-            Select a macro continental sphere to descend into its subregions, sovereign states, and economic territories.
+            Select any subregional zone to descend into its territory, or jump directly into any member sovereign state's briefing.
           </p>
 
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
               gap: '1.5rem',
             }}
           >
-            {regions.map((reg) => (
-              <div
-                key={reg.id}
-                onClick={() => onSelectRegion(reg.id)}
-                className="glass-panel"
-                style={{
-                  padding: '1.5rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  borderTop: `3px solid ${reg.color}`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = reg.color;
-                  e.currentTarget.style.transform = 'translateY(-3px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                    <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                      {reg.name}
-                    </h4>
-                    <span
+            {subregions.map((sub) => {
+              const subCountries = getCountriesBySubregion(sub.id);
+              return (
+                <div
+                  key={sub.id}
+                  className="glass-panel"
+                  style={{
+                    padding: '1.5rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    borderTop: '3px solid var(--accent-gold)',
+                    transition: 'all var(--transition-normal)',
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', gap: '0.5rem' }}>
+                      <h4
+                        onClick={() => (onSelectSubregion ? onSelectSubregion(sub.id) : onSelectRegion('middle-east'))}
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          fontSize: '1.35rem',
+                          fontWeight: 800,
+                          color: 'var(--text-primary)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {sub.name}
+                      </h4>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          color: 'var(--accent-cyan)',
+                          background: 'rgba(56, 189, 248, 0.08)',
+                          padding: '3px 8px',
+                          borderRadius: '999px',
+                          border: '1px solid rgba(56, 189, 248, 0.2)',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {subCountries.length} States
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                      {sub.description}
+                    </p>
+
+                    {/* Member States Flag Pills */}
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem', fontWeight: 600 }}>
+                        Member States:
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                        {subCountries.map((c) => (
+                          <button
+                            key={c.id}
+                            onClick={() => onSelectCountry(c.id)}
+                            style={{
+                              background: 'var(--bg-surface-elevated)',
+                              border: '1px solid var(--border-subtle)',
+                              borderRadius: 'var(--radius-full)',
+                              padding: '0.2rem 0.6rem',
+                              fontSize: '12px',
+                              color: 'var(--text-primary)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              transition: 'all 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = 'var(--accent-gold)';
+                              e.currentTarget.style.background = 'rgba(229, 181, 88, 0.1)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                              e.currentTarget.style.background = 'var(--bg-surface-elevated)';
+                            }}
+                            title={`Open ${c.name} Dossier`}
+                          >
+                            <span>{c.flagEmoji}</span>
+                            <span>{c.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <button
+                      onClick={() => (onSelectSubregion ? onSelectSubregion(sub.id) : onSelectRegion('middle-east'))}
+                      className="btn-secondary"
                       style={{
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        color: reg.color,
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        padding: '3px 8px',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border-subtle)',
+                        width: '100%',
+                        justifyContent: 'center',
+                        fontSize: 'var(--text-xs)',
+                        padding: '0.6rem 1rem',
                       }}
                     >
-                      {getSubregionsByRegion(reg.id).length} Subregions
-                    </span>
-                  </div>
-
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                    {reg.overview}
-                  </p>
-                </div>
-
-                <div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.65rem 0.85rem',
-                      background: 'var(--bg-surface-elevated)',
-                      borderRadius: 'var(--radius-sm)',
-                      marginBottom: '1rem',
-                      fontSize: 'var(--text-xs)',
-                    }}
-                  >
-                    <span>
-                      Population: <strong style={{ color: 'var(--text-primary)' }}>{(reg.totalPopulation / 1000000000).toFixed(2)}B</strong>
-                    </span>
-                    <span>
-                      GDP: <strong style={{ color: 'var(--accent-gold)' }}>${reg.totalGdpTrillionUsd}T</strong>
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem', color: reg.color, fontSize: 'var(--text-xs)', fontWeight: 700 }}>
-                    <span>Descend into {reg.name}</span>
-                    <ArrowRight size={14} />
+                      <span>Descend into {sub.name}</span>
+                      <ArrowRight size={13} />
+                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

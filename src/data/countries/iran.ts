@@ -1,0 +1,80 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Iran — full sovereign dossier (subregion: anatolia-mesopotamia-iran).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const IRAN: CountryProfile = buildSovereignProfile({
+    id: 'iran',
+    iso2: 'IR',
+    iso3: 'IRN',
+    unCode: '364',
+    name: 'Iran',
+    officialName: 'Islamic Republic of Iran',
+    nativeCommon: 'ایران',
+    nativeOfficial: 'جمهوری اسلامی ایران',
+    subregionId: 'anatolia-mesopotamia-iran',
+    capitalName: 'Tehran',
+    capitalCoords: [35.6892, 51.3890],
+    majorCities: ['Tehran', 'Mashhad', 'Isfahan', 'Shiraz', 'Tabriz', 'Karaj', 'Ahvaz', 'Qom'],
+    flagEmoji: '🇮🇷',
+    flagColors: ['#239F40', '#FFFFFF', '#DA0000'],
+    tagline: 'Ancient Persian heartland bridging the Caspian Sea and Persian Gulf, famed for turquoise domes, poetry, and carpet mastery.',
+    overview: 'Spanning from the Caspian Sea to the Persian Gulf, Iran is the heir to the Achaemenid and Safavid empires. Home to 27 UNESCO World Heritage sites, soaring Alborz peaks, and extraordinary contributions to poetry, algebra, and classical architecture.',
+    areaKm2: 1648195,
+    coastlineKm: 2440,
+    borders: [
+      { iso3: 'TUR', name: 'Türkiye', lengthKm: 499 },
+      { iso3: 'IRQ', name: 'Iraq', lengthKm: 1458 },
+      { iso3: 'AFG', name: 'Afghanistan', lengthKm: 921 },
+      { iso3: 'AZE', name: 'Azerbaijan', lengthKm: 611 },
+      { iso3: 'ARM', name: 'Armenia', lengthKm: 35 },
+    ],
+    highestName: 'Mount Damavand',
+    highestElevation: 5610,
+    lowestName: 'Caspian Sea',
+    lowestElevation: -28,
+    timezone: 'Asia/Tehran (UTC+3:30)',
+    coordinates: [32.4279, 53.6880],
+    population: 88500000,
+    medianAge: 32.4,
+    urbanizationRate: 76.5,
+    lifeExpectancy: 76.8,
+    fertilityRate: 1.7,
+    gdpNominalUsdBillions: 400.0,
+    gdpPppUsdBillions: 1600.0,
+    gdpPerCapitaPppUsd: 18100,
+    currencyCode: 'IRR',
+    currencyName: 'Iranian Rial',
+    currencySymbol: '﷼',
+    isPegged: false,
+    fallbackRate: 42000.0,
+    literacyRate: 89.0,
+    tertiaryEnrollment: 65.0,
+    safetyIndex: 51.0,
+    crimeIndex: 49.0,
+    peaceIndexRank: 137,
+    peaceIndexScore: 2.68,
+    koppenCode: 'BSk',
+    koppenTitle: 'Arid Plateau to Caspian Subtropical',
+    climateSummary: 'Arid continental interior with cold snowy winters and hot summers; lush subtropical strip along the Caspian coast.',
+    avgTemp: 17.5,
+    avgRainfall: 228,
+    unescoCount: 27,
+    landmarks: [
+      { name: 'Persepolis (Takht-e Jamshid)', location: 'Fars Province', description: 'Ceremonial capital of the Achaemenid Empire built by Darius the Great in 518 BCE.', imageUrl: 'https://images.unsplash.com/photo-1578895210405-907db486c111?w=800&auto=format&fit=crop' },
+      { name: 'Naqsh-e Jahan Square', location: 'Isfahan', description: 'Immense Safavid royal square bordered by the Shah Mosque, Ali Qapu Palace, and Sheikh Lotfollah Mosque.', imageUrl: 'https://images.unsplash.com/photo-1549144511-f099e773c147?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Ghormeh Sabzi', description: 'National herb stew made with parsley, leeks, cilantro, dried limes, kidney beans, and tender lamb.' },
+      { name: 'Zereshk Polo', description: 'Fluffy saffron basmati rice topped with tart barberries and served with braised chicken.' },
+    ],
+    languages: [
+      { name: 'Persian (Farsi)', isOfficial: true },
+    ],
+    mainIndustries: ['Oil & Gas', 'Petrochemicals', 'Automotive & Machinery', 'Mining & Steel', 'Carpet Weaving', 'Agriculture (pistachios & saffron)'],
+    topExports: ['Crude oil', 'Petrochemicals', 'Steel & iron', 'Pistachios & saffron', 'Hand-woven carpets'],
+});

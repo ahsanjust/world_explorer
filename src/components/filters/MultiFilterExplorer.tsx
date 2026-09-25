@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Filter, X, RotateCcw, ArrowRight, Scale, Search, GraduationCap } from 'lucide-react';
 import { ALL_COUNTRY_PROFILES } from '../../data';
-import { RegionId } from '../../types/spatial';
 
 interface MultiFilterExplorerProps {
   isOpen: boolean;
@@ -25,7 +24,7 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
   onTogglePin,
 }) => {
   // Filter States
-  const [selectedRegion, setSelectedRegion] = useState<RegionId | 'all'>('all');
+  const [selectedSubregion, setSelectedSubregion] = useState<string>('all');
   const [selectedSafety, setSelectedSafety] = useState<SafetyFilterOption>('all');
   const [selectedGdp, setSelectedGdp] = useState<GdpFilterOption>('all');
   const [selectedCost, setSelectedCost] = useState<CostFilterOption>('all');
@@ -35,7 +34,7 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
 
   // Reset all filters
   const resetFilters = () => {
-    setSelectedRegion('all');
+    setSelectedSubregion('all');
     setSelectedSafety('all');
     setSelectedGdp('all');
     setSelectedCost('all');
@@ -52,8 +51,8 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
         setSelectedSafety('high');
         setSelectedGdp('high');
         break;
-      case 'middle-east-wealth':
-        setSelectedRegion('asia');
+      case 'gulf-wealth':
+        setSelectedSubregion('arabian-peninsula');
         setSelectedGdp('high');
         break;
       case 'affordable-living':
@@ -74,7 +73,7 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
   // Active filter count
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (selectedRegion !== 'all') count++;
+    if (selectedSubregion !== 'all') count++;
     if (selectedSafety !== 'all') count++;
     if (selectedGdp !== 'all') count++;
     if (selectedCost !== 'all') count++;
@@ -82,7 +81,7 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
     if (selectedUniversity !== 'all') count++;
     if (searchQuery.trim().length > 0) count++;
     return count;
-  }, [selectedRegion, selectedSafety, selectedGdp, selectedCost, selectedPopulation, selectedUniversity, searchQuery]);
+  }, [selectedSubregion, selectedSafety, selectedGdp, selectedCost, selectedPopulation, selectedUniversity, searchQuery]);
 
   // Evaluated matching countries
   const matchingCountries = useMemo(() => {
@@ -96,8 +95,8 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
         if (!matchesName && !matchesCapital && !matchesUni) return false;
       }
 
-      // 1. Region
-      if (selectedRegion !== 'all' && country.regionId !== selectedRegion) {
+      // 1. Subregional Zone
+      if (selectedSubregion !== 'all' && country.subregionId !== selectedSubregion) {
         return false;
       }
 
@@ -129,16 +128,18 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
       if (selectedPopulation === 'compact' && pop >= 10000000) return false;
 
       // 6. University Filters
+      // A rank tier matches only institutions that actually carry a licensed
+      // rank: `null <= 50` would otherwise be true and let unranked records pass.
       if (selectedUniversity === 'top50') {
-        const hasTop50 = country.education.topUniversities.some((u) => u.globalRankQs <= 50);
+        const hasTop50 = country.education.topUniversities.some((u) => u.globalRankQs !== null && u.globalRankQs <= 50);
         if (!hasTop50) return false;
       }
       if (selectedUniversity === 'top100') {
-        const hasTop100 = country.education.topUniversities.some((u) => u.globalRankQs <= 100);
+        const hasTop100 = country.education.topUniversities.some((u) => u.globalRankQs !== null && u.globalRankQs <= 100);
         if (!hasTop100) return false;
       }
       if (selectedUniversity === 'top200') {
-        const hasTop200 = country.education.topUniversities.some((u) => u.globalRankQs <= 200);
+        const hasTop200 = country.education.topUniversities.some((u) => u.globalRankQs !== null && u.globalRankQs <= 200);
         if (!hasTop200) return false;
       }
       if (selectedUniversity === 'has3plus') {
@@ -147,7 +148,7 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
 
       return true;
     });
-  }, [selectedRegion, selectedSafety, selectedGdp, selectedCost, selectedPopulation, selectedUniversity, searchQuery]);
+  }, [selectedSubregion, selectedSafety, selectedGdp, selectedCost, selectedPopulation, selectedUniversity, searchQuery]);
 
   if (!isOpen) return null;
 
@@ -316,7 +317,7 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
                 🛡️ Safe High-Income Havens
               </button>
               <button
-                onClick={() => applyPreset('middle-east-wealth')}
+                onClick={() => applyPreset('gulf-wealth')}
                 style={{
                   background: 'rgba(255, 255, 255, 0.04)',
                   border: '1px solid var(--border-subtle)',
@@ -327,7 +328,7 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
                   cursor: 'pointer',
                 }}
               >
-                💰 Middle East Sovereign Wealth
+                💰 Gulf Sovereign Wealth
               </button>
               <button
                 onClick={() => applyPreset('affordable-living')}
@@ -438,14 +439,14 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
                 gap: '0.75rem',
               }}
             >
-              {/* 1. Region */}
+              {/* 1. Subregion */}
               <div>
                 <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '5px', fontWeight: 600 }}>
-                  🌐 Continental Sphere
+                  🌐 Subregional Zone
                 </label>
                 <select
-                  value={selectedRegion}
-                  onChange={(e) => setSelectedRegion(e.target.value as RegionId | 'all')}
+                  value={selectedSubregion}
+                  onChange={(e) => setSelectedSubregion(e.target.value)}
                   style={{
                     width: '100%',
                     height: '36px',
@@ -459,12 +460,12 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="all">All Continents</option>
-                  <option value="asia">Asia</option>
-                  <option value="europe">Europe</option>
-                  <option value="americas">Americas</option>
-                  <option value="africa">Africa</option>
-                  <option value="oceania">Oceania</option>
+                  <option value="all">All 5 Subregions</option>
+                  <option value="arabian-peninsula">Arabian Peninsula &amp; Gulf</option>
+                  <option value="levant">Levant &amp; East Mediterranean</option>
+                  <option value="anatolia-mesopotamia-iran">Anatolia, Mesopotamia &amp; Iran</option>
+                  <option value="north-africa">North Africa &amp; Nile Valley</option>
+                  <option value="caucasus-afghanistan">Caucasus &amp; Afghanistan</option>
                 </select>
               </div>
 
@@ -651,7 +652,12 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
             >
               {matchingCountries.map((country) => {
                 const isPinned = pinnedIds.includes(country.id);
-                const bestRank = Math.min(...country.education.topUniversities.map((u) => u.globalRankQs));
+                // Only licensed ranks take part in "best" — `Math.min` over an
+                // array containing `null` would report 0 as the best rank.
+                const rankedRanks = country.education.topUniversities
+                  .map((u) => u.globalRankQs)
+                  .filter((rank): rank is number => rank !== null);
+                const bestRank = rankedRanks.length > 0 ? Math.min(...rankedRanks) : null;
 
                 return (
                   <div
@@ -682,8 +688,8 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
                             </div>
                           </div>
                         </div>
-                        <span className="badge badge-muted" style={{ textTransform: 'capitalize', fontSize: '10px' }}>
-                          {country.regionId}
+                        <span className="badge badge-gold" style={{ textTransform: 'capitalize', fontSize: '10px' }}>
+                          {country.subregionId.replace(/-/g, ' ')}
                         </span>
                       </div>
 
@@ -741,8 +747,12 @@ export const MultiFilterExplorer: React.FC<MultiFilterExplorerProps> = ({
                         <span style={{ fontWeight: 600 }}>
                           {country.education.topUniversities.length} Top Universitie{country.education.topUniversities.length > 1 ? 's' : ''}
                         </span>
-                        <span style={{ color: 'var(--text-tertiary)' }}>•</span>
-                        <span>Best QS #{bestRank}</span>
+                        {bestRank !== null && (
+                          <>
+                            <span style={{ color: 'var(--text-tertiary)' }}>•</span>
+                            <span>Best QS #{bestRank}</span>
+                          </>
+                        )}
                       </div>
                     </div>
 

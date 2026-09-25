@@ -1,0 +1,81 @@
+import { CountryProfile } from '../../types/country';
+import { buildSovereignProfile } from './sovereignDossier';
+
+/**
+ * Israel — full sovereign dossier (subregion: levant).
+ *
+ * Seed fields are the country's own; the shared builder in `sovereignDossier.ts`
+ * supplies the fields that are still awaiting per-country research.
+ */
+export const ISRAEL: CountryProfile = buildSovereignProfile({
+    id: 'israel',
+    iso2: 'IL',
+    iso3: 'ISR',
+    unCode: '376',
+    name: 'Israel',
+    officialName: 'State of Israel',
+    nativeCommon: 'ישראל',
+    nativeOfficial: 'מדינת ישראל',
+    subregionId: 'levant',
+    capitalName: 'Jerusalem',
+    capitalCoords: [31.7683, 35.2137],
+    majorCities: ['Jerusalem', 'Tel Aviv', 'Haifa', 'Rishon LeZion', 'Petah Tikva', 'Ashdod', 'Beersheba'],
+    flagEmoji: '🇮🇱',
+    flagColors: ['#0038B8', '#FFFFFF'],
+    tagline: 'Eastern Mediterranean high-tech powerhouse and historical crossroads of monotheistic civilizations.',
+    overview: 'Situated along the southeastern Mediterranean coast, Israel combines historic sacred sites with a globally influential innovation ecosystem and desert agriculture technologies.',
+    areaKm2: 22072,
+    coastlineKm: 273,
+    borders: [
+      { iso3: 'EGY', name: 'Egypt', lengthKm: 208 },
+      { iso3: 'JOR', name: 'Jordan', lengthKm: 307 },
+      { iso3: 'LBN', name: 'Lebanon', lengthKm: 81 },
+      { iso3: 'SYR', name: 'Syria', lengthKm: 76 },
+    ],
+    highestName: 'Mount Hermon',
+    highestElevation: 2236,
+    lowestName: 'Dead Sea',
+    lowestElevation: -430,
+    timezone: 'Asia/Jerusalem (UTC+2)',
+    coordinates: [31.0461, 34.8516],
+    population: 9840000,
+    medianAge: 30.5,
+    urbanizationRate: 92.8,
+    lifeExpectancy: 82.8,
+    fertilityRate: 2.9,
+    gdpNominalUsdBillions: 510.0,
+    gdpPppUsdBillions: 538.0,
+    gdpPerCapitaPppUsd: 54700,
+    currencyCode: 'ILS',
+    currencyName: 'Israeli New Shekel',
+    currencySymbol: '₪',
+    isPegged: false,
+    fallbackRate: 3.75,
+    literacyRate: 97.8,
+    tertiaryEnrollment: 88.0,
+    safetyIndex: 68.2,
+    crimeIndex: 31.8,
+    peaceIndexRank: 143,
+    peaceIndexScore: 2.85,
+    koppenCode: 'Csa',
+    koppenTitle: 'Mediterranean to Hot Arid Negev',
+    climateSummary: 'Long, hot, dry summers and cool, rainy winters; semi-arid and arid in the south.',
+    avgTemp: 19.8,
+    avgRainfall: 535,
+    unescoCount: 9,
+    landmarks: [
+      { name: 'Old City of Jerusalem & Western Wall', location: 'Jerusalem', description: 'Ancient spiritual sanctum revered across Judaism, Christianity, and Islam.', imageUrl: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop' },
+      { name: 'Baháʼí Gardens', location: 'Haifa', description: 'Steep geometric garden terraces ascending Mount Carmel towards the Shrine of the Báb.', imageUrl: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&auto=format&fit=crop' },
+    ],
+    culinaryTraditions: [
+      { name: 'Shakshuka', description: 'Eggs poached in a simmering spiced tomato, chili, bell pepper, and cumin sauce.' },
+      { name: 'Sabich', description: 'Pita stuffed with fried eggplant, hard-boiled eggs, tahini, and amba mango pickle.' },
+    ],
+    languages: [
+      { name: 'Hebrew', isOfficial: true },
+      { name: 'Arabic', isOfficial: true },
+      { name: 'English', isOfficial: false },
+    ],
+    mainIndustries: ['High Technology & Software', 'Defence & Aerospace', 'Pharmaceuticals & Life Sciences', 'Diamond Trade', 'AgriTech', 'Tourism'],
+    topExports: ['Electrical & electronic equipment', 'Software & technology services', 'Pharmaceuticals', 'Diamonds', 'Machinery'],
+});

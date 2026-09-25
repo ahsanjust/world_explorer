@@ -25,8 +25,7 @@ import { WorldGeoCollection } from '../../types/map';
    for the unmodified 50m dataset.
 
    The 50m scale was chosen over 110m deliberately: at 110m, Natural Earth omits
-   Singapore entirely, along with other small states that are first-class members
-   of this app's country dataset. See AGENTS.md → "Known limitations".
+   Bahrain and other small states that are first-class members of this app's dataset.
    ============================================================================= */
 
 export const WORLD_GEO_URL = 'maps/world-countries-50m.geojson';

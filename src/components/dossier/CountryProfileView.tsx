@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CountryProfile } from '../../types/country';
 import { DossierHero } from './DossierHero';
 import { StickyNavRail } from './StickyNavRail';
+import { SECTIONS } from './sections';
 import { EconomyModule } from './EconomyModule';
 import { CurrencyModule } from './CurrencyModule';
 import { DemographicsModule } from './DemographicsModule';
@@ -27,11 +28,54 @@ export const CountryProfileView: React.FC<CountryProfileViewProps> = ({
 }) => {
   const [activeSection, setActiveSection] = useState<string>('overview');
 
+  /* Scroll-spy: keep the rail in sync while the user scrolls, not just on click.
+     The IntersectionObserver is only the *change trigger*; activation is decided
+     by geometry — the last section whose top has passed a reading line 35% down
+     the viewport — which stays correct for sections of very different heights and
+     never flickers between two short sections. rAF-throttled so scroll bursts
+     cost at most one pass per frame. */
+  useEffect(() => {
+    const ids = SECTIONS.map((s) => s.id);
+    const targets = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (targets.length === 0) return; // modules not mounted (defensive)
+
+    let frame = 0;
+    const sync = () => {
+      frame = 0;
+      const readingLine = window.innerHeight * 0.35;
+      let current = ids[0];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= readingLine) current = id;
+      }
+      setActiveSection((prev) => (prev === current ? prev : current));
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(sync);
+    };
+
+    const observer = new IntersectionObserver(schedule, {
+      rootMargin: '0px 0px -55% 0px', // fire when a section crosses the upper band
+      threshold: [0, 1],
+    });
+    targets.forEach((el) => observer.observe(el));
+
+    return () => {
+      observer.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [country.id]);
+
   const handleSelectSection = (sectionId: string) => {
     setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      // Honour reduced motion: JS-driven smooth scrolling ignores the CSS
+      // `scroll-behavior` override that the global reduced-motion block sets.
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      element.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
     }
   };
 

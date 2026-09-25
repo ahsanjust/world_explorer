@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Regenerable HTTP cache for scripts/build-world-geo.mjs (Wikidata lookups)
+.wikidata-cache
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
